@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement a Slice"
+  short_description: "Connect inputs, state, and outcomes with clear contracts"
+  default_prompt: "Use $implementation for the current product task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task-focused UX"
+  short_description: "Design and review screens around real user decisions"
+  default_prompt: "Use $product-ux for the current product task."

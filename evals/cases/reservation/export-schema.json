@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "required": ["reservations"],
+  "additionalProperties": false,
+  "properties": {
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "itemId", "startsAt", "endsAt", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "itemId": {"type": "string"},
+          "startsAt": {"type": "string", "format": "date-time"},
+          "endsAt": {"type": "string", "format": "date-time"},
+          "status": {"enum": ["confirmed", "cancelled"]}
+        }
+      }
+    }
+  }
+}

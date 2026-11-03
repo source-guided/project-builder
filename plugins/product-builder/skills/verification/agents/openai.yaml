@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Outcomes"
+  short_description: "Check required behavior and report evidence honestly"
+  default_prompt: "Use $verification for the current product task."

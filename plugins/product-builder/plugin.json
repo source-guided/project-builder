@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "product-builder",
+  "version": "0.1.0",
+  "description": "Evidence-led product delivery: understand the brief, design task-focused UX, implement, verify, and resume with project-local context.",
+  "author": {"name": "tkddu1591"},
+  "repository": "https://github.com/tkddu1591/product-builder",
+  "license": "MIT"
+}

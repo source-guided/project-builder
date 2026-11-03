@@ -1,0 +1,4 @@
+interface:
+  display_name: "Understand the Brief"
+  short_description: "Turn sources and acceptance criteria into observable work"
+  default_prompt: "Use $brief for the current product task."
