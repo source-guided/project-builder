@@ -10,12 +10,21 @@ spec.loader.exec_module(module)
 
 
 class EvaluationPreparationTest(unittest.TestCase):
+    def input(self, root):
+        source = root / "consumer-input"
+        source.mkdir()
+        (source / "README.md").write_text("Test-only request")
+        (source / "input.txt").write_text("fixture")
+        return source
+
     def test_provides_only_selected_input_and_package(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             project = root / "project"
-            prompt = module.prepare("resume", project)
-            self.assertEqual({p.name for p in project.iterdir()}, {"README.md", "summary.py", "work-record.md"})
+            source = self.input(root)
+            (root / "criteria.json").write_text("Do not supply this")
+            prompt = module.prepare(source, project)
+            self.assertEqual({p.name for p in project.iterdir()}, {"README.md", "input.txt"})
             package = root / "project-plugin"
             self.assertTrue((package / "skills/start/SKILL.md").is_file())
             self.assertFalse((package / "evals/criteria.json").exists())
@@ -29,7 +38,7 @@ class EvaluationPreparationTest(unittest.TestCase):
             sentinel = project / "sentinel"
             sentinel.write_text("user work")
             with self.assertRaises(ValueError):
-                module.prepare("resume", project)
+                module.prepare(self.input(Path(temp)), project)
             self.assertEqual(sentinel.read_text(), "user work")
 
     def test_conflicting_prompt_does_not_create_partial_project(self):
@@ -37,7 +46,18 @@ class EvaluationPreparationTest(unittest.TestCase):
             root = Path(temp)
             (root / "project-prompt.txt").write_text("existing prompt")
             with self.assertRaises(ValueError):
-                module.prepare("resume", root / "project")
+                module.prepare(self.input(root), root / "project")
+            self.assertFalse((root / "project").exists())
+
+    def test_input_symlinks_and_nested_output_are_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.input(root)
+            with self.assertRaises(ValueError):
+                module.prepare(source, source / "output")
+            (source / "leak").symlink_to(root / "criteria.json")
+            with self.assertRaises(ValueError):
+                module.prepare(source, root / "project")
             self.assertFalse((root / "project").exists())
 
 

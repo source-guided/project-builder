@@ -3,29 +3,16 @@ name: verification
 description: Verify product changes against sourced acceptance criteria, actual user flows, and important failure or state transitions. Use for completion checks and focused reviews; distinguish static checks, runtime behavior, integration, and acceptance.
 ---
 
-# Verify the outcome
+# verification
 
-Use the brief and decisions as the expected behavior. Existing code and tests are observations, not authority to shrink the requirement. Scale the checks to the change and time budget.
+Read the package [reference index](../../references/index.json), follow its governance reference, and apply that source throughout the task. This also applies when improving this harness. The governing rule is owned there, not duplicated here.
 
-## Plan and execute relevant checks
+Then select `delivery` / `verification` through the reference graph to find this capability's actual workflow. Route from the user's intent and relevant metadata, including horizontal links and the consuming project's own registry. The user should not need to enumerate skills or source paths.
 
-For each mandatory outcome, choose the smallest meaningful check. Consider:
-- Normal task completion with representative input.
-- Invalid/empty input, important boundaries, and recovery.
-- Changed inputs versus old results; unsaved versus confirmed state.
-- Duplicate requests, conflicting edits, partial failure where relevant.
-- Restart persistence, export schema, run/deployment artifacts if required.
-- Role/permission behavior and rendered UX for affected paths.
-- Interaction transitions: expected stable controls, scroll, and focus across editing, cancellation, errors, and loading. Distinguish intended expansion from incidental layout jumps; load-only metrics are insufficient.
+The package root is two directories above this skill folder. Bootstrap the mandatory source using the packaged helper:
 
-For computed output, check invariants independently of the generator. Reusing the same calculation as the test oracle can repeat the same mistake. Use small hand-checkable fixtures or a separate validation path. Do not add tests that only mirror text or implementation details.
+```sh
+python3 <plugin-root>/scripts/references.py read --index <plugin-root>/references/governance/index.json --id routing-policy --trace <project>/.local/product-builder/source-trace.jsonl
+```
 
-Run the project's required static and targeted dynamic checks. Use available browser/app tools for affected user flows. Inspect meaningful visual states as well as accessible controls. A screenshot proves appearance at a moment, not persistence or concurrency.
-
-## Evidence and completion
-
-Record input/action, expected outcome, observed result, evidence location, and revision. Distinguish **passed**, **failed**, **not run**, and **blocked**. Mark evidence invalidated when relevant code changes after the run. Do not broaden or repeat passing checks without new changes or unresolved concerns.
-
-Do not turn a documentation checklist into a passing test report. Tool failures are not product passes. If runtime checks cannot run, identify the minimum missing capability and finish independent static work. No screenshots or measurements may be invented.
-
-Use [evidence and handoff](references/evidence.md) for a substantial final handoff. Keep final reporting compact for small edits. Report residual limitations without claiming external submission, deployment, or acceptance that was not observed and authorized.
+Use `list` for metadata; use `resolve` → appropriate reader → `record` for each source, or `read` for text files. Find the project initializer through the delivery reference if a consumer registry is missing. Follow the selected source workflow, then audit the recorded traversal.

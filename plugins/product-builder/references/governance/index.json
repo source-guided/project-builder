@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "routing-policy",
+      "label": "참조 탐색 원칙",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../sources/governance/reference-routing.md",
+      "topics": [
+        "required",
+        "harness",
+        "routing"
+      ]
+    }
+  ]
+}

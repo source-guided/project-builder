@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "governance",
+      "label": "필수 참조 탐색 원칙",
+      "kind": "reference",
+      "access": "file",
+      "locator": "governance/index.json",
+      "topics": [
+        "always",
+        "하네스",
+        "routing"
+      ]
+    },
+    {
+      "id": "version",
+      "label": "버전·패키지 정보 원천",
+      "kind": "reference",
+      "access": "file",
+      "locator": "version/index.json",
+      "topics": [
+        "version",
+        "버전",
+        "publisher"
+      ]
+    },
+    {
+      "id": "design",
+      "label": "디자인 관련 참조",
+      "kind": "reference",
+      "access": "file",
+      "locator": "design/index.json",
+      "topics": [
+        "design",
+        "디자인",
+        "ui",
+        "ux",
+        "figma"
+      ]
+    },
+    {
+      "id": "frontend",
+      "label": "프론트 구현 참조",
+      "kind": "reference",
+      "access": "file",
+      "locator": "frontend/index.json",
+      "topics": [
+        "frontend",
+        "프론트",
+        "implementation",
+        "convention"
+      ]
+    },
+    {
+      "id": "delivery",
+      "label": "요구사항·구현·검증·재개 참조",
+      "kind": "reference",
+      "access": "file",
+      "locator": "delivery/index.json",
+      "topics": [
+        "product",
+        "개발",
+        "brief",
+        "verification",
+        "resume"
+      ]
+    }
+  ]
+}

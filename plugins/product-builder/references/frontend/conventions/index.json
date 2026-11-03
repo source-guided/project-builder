@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "implementation",
+      "label": "현재 프로젝트 계약에 따른 구현",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../../skills/implementation/sources/workflow.md",
+      "topics": [
+        "implementation",
+        "contract",
+        "frontend"
+      ],
+      "related_references": [
+        "../../design/ux/index.json",
+        "../../delivery/index.json"
+      ]
+    }
+  ]
+}

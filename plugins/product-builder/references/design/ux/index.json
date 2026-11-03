@@ -1,0 +1,209 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "workflow",
+      "label": "사용자 과업 중심 UX 절차",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../../skills/product-ux/sources/workflow.md",
+      "topics": [
+        "ux",
+        "flow"
+      ],
+      "related_references": [
+        "../ui/index.json",
+        "../../frontend/conventions/index.json"
+      ]
+    },
+    {
+      "id": "patterns",
+      "label": "패턴 적용 조건과 반례",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../../skills/product-ux/sources/patterns.md",
+      "topics": [
+        "patterns"
+      ]
+    },
+    {
+      "id": "interactions",
+      "label": "상호작용 방식과 검증",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../../skills/product-ux/sources/interaction-patterns.md",
+      "topics": [
+        "editing",
+        "focus",
+        "layout"
+      ]
+    },
+    {
+      "id": "atlassian-inline",
+      "label": "Atlassian 인라인 편집",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://atlassian.design/components/inline-edit/inline-editable-textfield/usage",
+      "topics": [
+        "inline",
+        "editing"
+      ]
+    },
+    {
+      "id": "carbon-modal",
+      "label": "Carbon 모달",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.carbondesignsystem.com/building-blocks/core/components/modal/guidelines",
+      "topics": [
+        "modal",
+        "interruption"
+      ]
+    },
+    {
+      "id": "fluent-drawer",
+      "label": "Fluent 패널과 드로어",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://fluent2.microsoft.design/components/web/react/core/drawer/usage",
+      "topics": [
+        "drawer",
+        "context"
+      ]
+    },
+    {
+      "id": "gov-questions",
+      "label": "GOV.UK 질문 화면",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://design-system.service.gov.uk/patterns/question-pages/",
+      "topics": [
+        "forms",
+        "questions"
+      ]
+    },
+    {
+      "id": "gov-errors",
+      "label": "GOV.UK 오류 요약",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://design-system.service.gov.uk/components/error-summary/",
+      "topics": [
+        "validation",
+        "errors"
+      ]
+    },
+    {
+      "id": "nng-modal",
+      "label": "NN/g 모달 선택 기준",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.nngroup.com/articles/modal-nonmodal-dialog/",
+      "topics": [
+        "modal",
+        "context"
+      ]
+    },
+    {
+      "id": "nng-disclosure",
+      "label": "NN/g 단계적 정보 공개",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.nngroup.com/articles/progressive-disclosure/",
+      "topics": [
+        "complexity",
+        "disclosure"
+      ]
+    },
+    {
+      "id": "wai-dialog",
+      "label": "WAI-ARIA 대화상자 패턴",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "topics": [
+        "keyboard",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "web-cls",
+      "label": "web.dev 레이아웃 이동",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://web.dev/articles/cls",
+      "topics": [
+        "layout",
+        "metrics"
+      ]
+    },
+    {
+      "id": "carbon-notification",
+      "label": "Carbon 알림 범위와 지속 시간",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.carbondesignsystem.com/building-blocks/core/components/notification/guidelines",
+      "topics": [
+        "feedback",
+        "notifications"
+      ]
+    },
+    {
+      "id": "gov-banner",
+      "label": "GOV.UK 배너 적용 범위",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://design-system.service.gov.uk/components/notification-banner/",
+      "topics": [
+        "feedback",
+        "banner"
+      ]
+    },
+    {
+      "id": "primer-feedback",
+      "label": "Primer 접근 가능한 피드백",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://primer.style/accessibility/patterns/accessible-notifications-and-messages/",
+      "topics": [
+        "feedback",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "carbon-forms",
+      "label": "Carbon 폼 행동 영역",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.carbondesignsystem.com/building-blocks/core/patterns/forms",
+      "topics": [
+        "forms",
+        "actions"
+      ]
+    },
+    {
+      "id": "sap-partial-edit",
+      "label": "SAP Fiori 부분 편집",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.sap.com/design-system/fiori-design-web/v1-96/foundations/best-practices/global-patterns/object-handling/manage-parts-of-an-object",
+      "topics": [
+        "editing",
+        "actions"
+      ]
+    },
+    {
+      "id": "feedback-actions",
+      "label": "알림 수명과 편집 동작 위치",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../../skills/product-ux/sources/feedback-and-actions.md",
+      "topics": [
+        "feedback",
+        "notification",
+        "editing",
+        "actions"
+      ]
+    }
+  ]
+}

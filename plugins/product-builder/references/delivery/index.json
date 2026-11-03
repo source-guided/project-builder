@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "start",
+      "label": "제품 작업 시작·재개",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/start/sources/workflow.md",
+      "topics": [
+        "start",
+        "resume"
+      ],
+      "related_references": [
+        "../design/index.json",
+        "../frontend/index.json"
+      ]
+    },
+    {
+      "id": "brief",
+      "label": "요구사항과 인수 조건",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/brief/sources/workflow.md",
+      "topics": [
+        "brief",
+        "requirements"
+      ]
+    },
+    {
+      "id": "implementation",
+      "label": "과업 단위 구현",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/implementation/sources/workflow.md",
+      "topics": [
+        "implementation"
+      ]
+    },
+    {
+      "id": "verification",
+      "label": "결과와 증거 검증",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/verification/sources/workflow.md",
+      "topics": [
+        "verification",
+        "testing"
+      ]
+    },
+    {
+      "id": "source-evaluation",
+      "label": "근거와 평가 구분",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/brief/sources/source-evaluation.md",
+      "topics": [
+        "provenance",
+        "rubric"
+      ]
+    },
+    {
+      "id": "constraints",
+      "label": "제약조건 추출",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/brief/sources/constraints.md",
+      "topics": [
+        "constraints"
+      ]
+    },
+    {
+      "id": "examples",
+      "label": "합성 요구사항 사례",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/brief/sources/examples.md",
+      "topics": [
+        "examples"
+      ]
+    },
+    {
+      "id": "evidence",
+      "label": "검증 증거 구분",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/verification/sources/evidence.md",
+      "topics": [
+        "evidence"
+      ]
+    },
+    {
+      "id": "work-record",
+      "label": "프로젝트 작업 기록 양식",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/start/assets/work-record.md",
+      "topics": [
+        "record"
+      ]
+    },
+    {
+      "id": "initializer",
+      "label": "소비 프로젝트 로컬 초기화 도구",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/start/scripts/init_context.py",
+      "topics": [
+        "setup",
+        "project"
+      ]
+    }
+  ]
+}

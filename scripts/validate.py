@@ -4,6 +4,7 @@
 import json
 import re
 import subprocess
+import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -70,14 +71,40 @@ def validate(root: Path = ROOT):
         if path.suffix != ".md":
             continue
         for link in re.findall(r"\]\(([^)]+)\)", path.read_text()):
-            if "://" in link or link.startswith("#"):
+            is_source = "sources" in path.relative_to(plugin).parts
+            if link.startswith("#"):
+                continue
+            if "://" in link:
+                assert not is_source, f"Source-to-source URL must return through a reference: {path.name}"
                 continue
             target = (path.parent / link.split("#")[0]).resolve()
             assert target.is_relative_to(plugin.resolve()), f"Link leaves package: {path.name}"
             assert target.exists(), f"Broken link in {path.name}: {link}"
+            if is_source:
+                assert target.is_relative_to((plugin / "references").resolve()), f"Source-to-source link must return through a reference: {path.name}"
+    spec = importlib.util.spec_from_file_location("package_reference_routes", plugin / "scripts/references.py")
+    routes = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(routes)
+    indexes = routes.walk_references(plugin / "references/index.json")
+    assert indexes, "Missing reference graph"
+    for index in indexes:
+        current = Path(index["index"])
+        assert current.is_relative_to((plugin / "references").resolve()), "Public references cannot bind a consumer registry"
+        for entry in index["entries"]:
+            if entry["access"] == "file":
+                target = (current.parent / entry["locator"]).resolve()
+                assert target.is_relative_to(plugin.resolve()) and target.is_file(), f"Invalid source location: {entry['id']}"
     if (root / ".git").exists():
         tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().split("\0")
-        assert not any(name.startswith(".local/") for name in tracked), "Local context is tracked"
+        assert not any(name.startswith(".local/") for name in tracked), "Consumer context is tracked in the Git index"
+        inventory = json.loads((root / "publication-files.json").read_text())
+        assert isinstance(inventory, list) and all(isinstance(name, str) for name in inventory), "Invalid publication inventory"
+        assert len(inventory) == len(set(inventory)), "Duplicate publication entry"
+        if "publication-files.json" in tracked:
+            staged_inventory = json.loads(subprocess.check_output(["git", "show", ":publication-files.json"], cwd=root))
+            assert inventory == staged_inventory, "Stage the reviewed publication inventory before validation"
+        candidates = set(filter(None, subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=root).decode().split("\0")))
+        assert not candidates - set(inventory), f"Unreviewed public files: {sorted(candidates - set(inventory))}"
         ignored = subprocess.run(["git", "check-ignore", "--no-index", "-q", ".local/context/probe"], cwd=root)
         assert ignored.returncode == 0, "Local context must be ignored"
         denylist = root / ".local/publication-denylist.json"

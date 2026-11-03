@@ -1,42 +1,32 @@
-# Validation record
+# Plugin validation
 
-Target: GPT-6.1 Sol, reasoning effort **high**. This record separates package checks, model behavior, and product execution. Initial exploratory runs without explicit High are not final qualification evidence.
+## Reproduce package checks
 
-## Reproduction
+```sh
+python3 scripts/validate.py
+python3 -m unittest discover -s tests -v
+npm ci
+npx playwright install chromium
+npm run test:ui
+python3 scripts/package.py
+```
 
-Run the static package checks and unit tests in the root README. Prepare a new scenario with `scripts/prepare_eval.py`; select GPT-6.1 Sol / High explicitly in a compatible app agent. Do not supply evaluator criteria or previous outputs to the implementing agent. Use a separate copied package and fresh project directory for each run. This is logical separation, not enforced filesystem read isolation.
+The package validator checks the five skill entry points, metadata-only reference indexes, local source locations, source Markdown links, the explicit distributable-file allowlist, and publication boundaries. Unit tests exercise file preservation, invalid registration, symlinks, reference receipts, cycles, moved installations, consumer-local registries, and archive exclusion.
 
-The optional CLI runner requests the same model and effort and saves execution receipts. In the tested ChatGPT-account CLI, the model identifier was rejected. That failure is not a product failure or a successful model evaluation. No alternate model or lower effort is substituted.
+The common UX example has browser regression coverage at actual desktop and narrow viewports. Its thresholds apply to that example's expected stable elements; they are not universal layout rules.
+
+## Public repository boundary
+
+Generic harness self-improvement methods, input preparers, model runners, and their own regression tests are public development tools. `scripts/prepare_eval.py` accepts a consumer-owned raw-input directory; `scripts/run_eval.py` executes it and records outcomes locally. Neither includes a task catalogue or custom grader.
+
+Specific briefs, datasets, rubrics, generated apps, answers, traces, results, and project bindings stay in the consuming project or ignored `.local/`. This distinction is about task dependency, not a folder's name. The common UX example is an explicitly designated reusable teaching asset.
+
+`publication-files.json` lists reviewed public repository files; the installation package has its own narrower allowlist. New public files require explicit inventory review. The validator checks Git-index membership as well as unignored files; removing a worktree copy does not make an indexed private file safe to publish. The inventory detects unexpected files but cannot determine whether their contents are task-specific. Review actual staged content before publication.
 
 ## Evidence boundaries
 
-- Package validation checks structure, local links, basic identity, and publication boundaries.
-- Unit tests check file preservation, symlink refusal, and deterministic archive exclusion.
-- Behavioral cases inspect artifacts, actual execution, and consistency with the user request.
-- Browser checks cover the rendered states actually exercised; they do not establish a user study.
-- Review a new release after material workflow changes; prior checks may be invalidated.
+A reference trace audit validates recorded transitions; it cannot prove that an agent made no unrecorded reads. Markdown link checks do not interpret arbitrary prose or inline commands. Review actual tool use as well as the trace.
 
-## 2026-11-03 release qualification
+Model behavior is evaluated separately in local development work using the target GPT-6.1 Sol / High configuration. Dispatch configuration is not independent provider attestation of the serving model. A repaired example and a new-context run are different evidence; an earlier failed attempt stays failed.
 
-Model behavior runs were dispatched through the app agent API with `model=gpt-6.1-sol` and `reasoning_effort=high` explicitly specified. The agents could not independently introspect the serving model; this records the dispatch configuration, not a separate provider attestation. Earlier runs without explicit High are excluded.
-
-| Case | Observed result | Scope / limitation |
-| --- | --- | --- |
-| Reservation design | Supplied criteria and export contract traced; role-specific task flow; informal timing comment not promoted into an approval requirement | Design-only request respected; no service or runtime pass claimed |
-| CSV reconciliation | Executable standard-library CLI; 10 generated tests passed; parent independently ran 20 checks including precision, invalid inputs on both sides, and preservation of previous output | No large-volume or power-loss durability claim |
-| Document review UX | Irrelevant metrics removed; revision-scoped decisions and edit recovery exercised; desktop and narrow rendering checked | First narrow screenshot failed review and its pass claim was withdrawn; corrected evidence and independent actual-viewport Chromium checks support the final result. Screen reader and user study not run |
-| Narrow resume fix | Current zero-versus-missing defect reproduced and corrected; parent independently checked zero, None, positive values, and preserved unrelated note | No unrelated architecture work or deployment |
-| Private project-context analysis | Required source categories, provenance, and missing contracts remained distinct; observed example values were not treated as global limits | Document analysis only; private inputs and output are not distributed; not proof of original source completeness |
-
-Package checks: portable manifest validated against the published schema; all five skills passed the skill-authoring validator; internal references passed. **12 unit tests** cover initializer preservation, ignore-rule edge cases, symlinks, explicit archive file lists, and fresh evaluation preparation. Local Codex CLI 0.153.4 successfully installed the package; the release notes record the final remote-source installation and CI results.
-
-## Findings corrected before release
-
-- The local-record initializer previously mistook a comment or negation ending in `/.local/` for an ignore rule. Exact rule matching and regression tests now cover this. An independent review checked actual `git check-ignore` outcomes.
-- Initial archive collection accepted unlisted ordinary files. `package-files.json` now explicitly enumerates every distributable file; unexpected, missing, private, or escaping paths fail validation.
-- Initial responsive evidence did not support its pass claim. The claim was invalidated, the actual viewport was measured, and screenshots were reopened and independently checked. The UX skill now explicitly rejects crop/element-width substitutes for viewport verification.
-- User interaction exposed a second issue: entering edit mode moved the review region by about 205px and changed its width by 15px at the observed viewport. The Korean demo now uses a stable inline content frame and action/error slots. The design choice follows the linked interaction-pattern references rather than making modals a default. **16 Playwright tests** across actual 1280, 618, 375, and 320px viewports now check edit/error/cancel geometry, scroll/focus, native keyboard order, long-content accessibility, valid/error/recovered accessible descriptions, and revision semantics. These pass locally and are included in CI. The 1px tolerance is specific to this example's expected stable anchors, not a universal product rule.
-
-The final package adds the verified synthetic UI example and the above evidence/packaging safeguards to the evaluated workflow. Deterministic fixes were regression-tested; no unrelated model case was rerun merely to inflate counts. This finite scenario set demonstrates these observed behaviors, not universal reliability.
-
-- Accessible-description review found hidden error text attached to a valid field. Error references now follow actual invalid/recovered state, with browser accessibility assertions in all four viewports.
+Release notes identify the published commit and observed package, regression, CI, and installation results. Task-specific tooling and evidence remain local; generic improvement tooling stays public. Finite evaluations do not establish universal compliance, user research, live integration, deployment, or stakeholder acceptance.

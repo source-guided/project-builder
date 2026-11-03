@@ -9,11 +9,13 @@
 Codex CLI의 플러그인 기능이 필요합니다. 로컬 설치 검증 버전은 **0.153.4**입니다.
 
 ```sh
-codex plugin marketplace add tkddu1591/product-builder --ref v0.1.0
+codex plugin marketplace add tkddu1591/product-builder --ref v0.2.0
 codex plugin add product-builder@tkddu1591-tools
 ```
 
 새 채팅에서 모델을 **GPT-6.1 Sol**, reasoning effort를 **High**로 선택한 뒤 시작합니다.
+
+활성화된 스킬은 “프론트 프로젝트 구현이 필요해. 현재 요구사항부터 확인해줘”처럼 작업 의도로 선택되도록 구성했습니다. 명시적으로 시작하려면 아래 호출을 사용할 수 있습니다.
 
 ```text
 $product-builder:start
@@ -37,6 +39,8 @@ codex plugin list --marketplace tkddu1591-tools --json
 
 ## 작업 방식
 
+[공통 참조 색인](plugins/product-builder/references/index.json)에서 요청과 관련된 영역을 찾고, 참조를 거쳐 실제 원천을 읽습니다. 원천에서 다른 원천이 필요해져도 반드시 다시 참조를 조회합니다. 디자인·프론트·프로젝트 사이의 수평 연결을 지원하며, 참조에는 위치·주제·접근 방식만 둡니다. 버전과 소유 정보도 별도 원천을 참조해 확인합니다. [참조 구조와 경로 검증](docs/reference-architecture.md)을 참고하세요.
+
 | 스킬 | 맡는 일 |
 | --- | --- |
 | `start` | 현재 자료·환경·작업 상태를 확인하고 필요한 절차를 연결 |
@@ -55,11 +59,13 @@ codex plugin list --marketplace tkddu1591-tools --json
 - 필요한 오류·접근성 안내·결과의 유효성과 영향을 유지합니다.
 - 실제 렌더링과 사용자 흐름으로 확인하고, 미확인 화면은 검증 완료로 보고하지 않습니다.
 
-[적용 조건과 반례](plugins/product-builder/skills/product-ux/references/patterns.md), [다른 도메인의 요구사항 예시](plugins/product-builder/skills/brief/references/examples.md), [제약조건 추출 기준](plugins/product-builder/skills/brief/references/constraints.md)을 포함합니다. 예제의 수치나 기능은 다른 프로젝트의 기본값이 아닙니다.
+[UX 참조](plugins/product-builder/references/design/ux/index.json)의 `patterns`, [요구사항 참조](plugins/product-builder/references/delivery/index.json)의 `examples`와 `constraints`를 통해 적용 조건·반례·제약 추출 원천을 찾습니다. 예제의 수치나 기능은 다른 프로젝트의 기본값이 아닙니다.
 
-[실행 가능한 문서 검토 예제](plugins/product-builder/skills/product-ux/assets/document-review/index.html)와 데스크톱·좁은 화면 캡처도 포함합니다. 이 예제는 합성 콘텐츠를 사용하는 화면 흐름 참고 자료이며, 상태는 현재 페이지에서만 유지됩니다.
+[UI 참조](plugins/product-builder/references/design/ui/index.json)의 `example`과 캡처 참조로 실행 가능한 공통 문서 검토 예제를 찾습니다. 이 예제는 합성 콘텐츠를 사용하는 화면 흐름 참고 자료이며, 상태는 현재 페이지에서만 유지됩니다.
 
-[편집 방식 선택과 화면 위치 유지 기준](plugins/product-builder/skills/product-ux/references/interaction-patterns.md)은 인라인 편집·모달·별도 페이지의 적용 조건과 레퍼런스를 정리합니다. 레이아웃 이동을 가리기 위해 팝업을 기본값으로 선택하지 않습니다.
+[UX 참조](plugins/product-builder/references/design/ux/index.json)의 `interactions`와 `feedback-actions`는 편집 방식·행동 영역·알림 범위와 수명에 대한 원천으로 연결합니다. 레이아웃 이동을 가리기 위해 팝업을 기본값으로 선택하지 않습니다.
+
+[UI 참조](plugins/product-builder/references/design/ui/index.json)와 [UX 참조](plugins/product-builder/references/design/ux/index.json)는 Carbon, Atlassian, Fluent, GOV.UK, NN/g, Linear, Notion, WAI와 web.dev의 여러 접근법을 연결합니다. [Figma 참조](plugins/product-builder/references/design/figma/index.json)도 별도로 둡니다. 관련 원천을 비교하고 사용자 선호를 적용하며, 한 제품의 스타일을 모든 작업에 강제하지 않습니다.
 
 ## 도구와 모델
 
@@ -74,6 +80,8 @@ codex plugin list --marketplace tkddu1591-tools --json
 민감한 기록에 사용할 `.local/product-builder/`를 준비하는 선택적 스크립트가 포함되어 있습니다. 기존 기록을 덮어쓰지 않고 `.gitignore`에 `/.local/`를 추가합니다. 이미 추적 중인 파일까지 추적 해제하지는 않습니다.
 
 이 저장소의 `.local/` 내용은 공개 패키지에 들어가지 않습니다. 배포 ZIP은 플러그인 디렉터리의 허용 파일만 포함합니다. 원천 자료를 외부로 보내거나 자동 업로드하는 기능은 없습니다.
+
+공개 여부는 폴더명보다 특정 과제에 대한 의존성으로 구분합니다. 범용 하네스 자기개선 절차·입력 준비·모델 실행 도구와 도구 자체의 회귀 검사는 공개합니다. 개별 과제·데이터·전용 채점·답안·결과·프로젝트 참조는 합성 자료라도 사용하는 프로젝트 또는 무시된 `.local/`에 둡니다. 공통 UX 예제는 별도로 명시합니다.
 
 ## 개발과 검증
 
@@ -95,7 +103,7 @@ npm run test:ui
 
 실제 viewport 4종에서 편집·오류·취소 전후 주요 영역 위치, 스크롤·포커스, 리비전별 승인, 키보드와 긴 내용을 확인합니다. 이 예제의 위치 허용치는 1px이며 모든 제품의 레이아웃을 고정하는 규칙이 아닙니다.
 
-모델 행동 평가는 [evals](evals/README.md)를 따릅니다. 패키지 검사 통과, 모델의 작업 결과, 제품 런타임 검사, 실제 배포·사용자 인수는 각각 구분합니다. 한 번의 평가로 모든 도메인에서의 품질을 보장하지 않습니다.
+[하네스 자기개선 절차](docs/forward-testing.md)에 따라 개별 평가를 로컬에서 실행합니다. 범용 준비 도구 `scripts/prepare_eval.py --input <원본 입력 폴더> --output <새 작업 폴더>`는 소비자가 제공한 자료만 전달합니다. 구현자에게 줄 요구와 입력에서 정답·평가표·이전 산출물을 분리합니다. 패키지 검사, 모델 행동, 제품 실행, 실제 배포·사용자 인수는 구분합니다.
 
 ## 구조
 
@@ -103,9 +111,11 @@ npm run test:ui
 .agents/plugins/marketplace.json   # GitHub 배포 소스
 plugins/product-builder/
   plugin.json                     # 설치 패키지
-  skills/                         # 공통 절차·참고 자료·템플릿
-evals/                            # 공개 합성 시나리오와 검토 기준
-scripts/                          # 구조·배포·평가 준비 도구
+  references/                     # 범주별 탐색 메타데이터와 수평 연결
+  sources/governance/              # 별도 소유한 참조 탐색 원칙
+  scripts/references.py            # 조회·읽기 영수증·경로 검사
+  skills/                         # 진입점과 각 영역이 소유하는 실제 절차
+scripts/                          # 구조·배포·범용 하네스 자기개선 도구
 tests/                            # 파일 보존·배포 경계 등의 검사
 .local/                           # 비공개 기록·실행 증거, Git 제외
 ```

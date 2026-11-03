@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "mcp-context",
+      "label": "Figma 도구와 에이전트의 역할",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://developers.figma.com/docs/figma-mcp-server/mcp-vs-agent/",
+      "topics": [
+        "figma",
+        "context"
+      ],
+      "related_references": [
+        "../ui/index.json",
+        "../../frontend/conventions/index.json"
+      ]
+    }
+  ]
+}

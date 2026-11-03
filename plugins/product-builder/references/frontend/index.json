@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "conventions",
+      "label": "프론트 구현과 컨벤션 탐색",
+      "kind": "reference",
+      "access": "file",
+      "locator": "conventions/index.json",
+      "topics": [
+        "frontend",
+        "conventions",
+        "components"
+      ],
+      "related_references": [
+        "../design/index.json",
+        "../delivery/index.json"
+      ]
+    }
+  ]
+}

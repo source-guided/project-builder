@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "package",
+      "label": "플러그인 버전·작성자 선언",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../plugin.json",
+      "topics": [
+        "version",
+        "author"
+      ]
+    },
+    {
+      "id": "distribution",
+      "label": "배포 파일 계약",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../package-files.json",
+      "topics": [
+        "package",
+        "files"
+      ]
+    }
+  ]
+}

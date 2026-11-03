@@ -13,3 +13,9 @@ A repaired example demonstrates that the repair works. To evaluate a reusable wo
 Use distinct domains and interaction shapes. A UI case should examine information relevance, justified inline/dialog/page choice, editing/error/cancel transitions, keyboard/accessibility, and data semantics. A non-UI case should not acquire a dashboard or unnecessary persistence. Keep task-specific numbers and business rules in fixtures, not in skills.
 
 Finite cases provide observed evidence, not proof of universal compliance. Report task coverage and limits. A sample that ships inside the plugin is a reference, not a held-out answer; use a different task when testing transfer.
+
+## Consumer-owned evaluation inputs
+
+The public repository supplies this method and generic preparation tooling, not a catalogue of project cases. Keep task briefs, input data, rubrics, generated apps, and raw results in the consuming project or ignored `.local/`. Use `scripts/prepare_eval.py --input <raw-input-directory> --output <new-project-directory>`. Keep the raw-input directory limited to material intended for the implementer; evaluator criteria remain separate.
+
+After the run, compare the reference/source trace with observed tool use. Trace validity proves only that recorded transitions follow the protocol. Inspect the actual action region and feedback lifetime in addition to geometry, focus, and data preservation. General UX guidance belongs in its owning source behind the UX reference index; project-specific expected values and tests stay with the project.

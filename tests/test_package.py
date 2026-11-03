@@ -47,6 +47,20 @@ class PackageTest(unittest.TestCase):
             self.assertFalse((root / ".gitignore").exists())
             self.assertEqual(list(outside.iterdir()), [])
 
+    def test_project_bindings_are_metadata_in_the_consuming_project(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "README.md").write_text("private-product-body-sentinel")
+            (root / "AGENTS.md").write_text("private-project-convention-sentinel")
+            record = module.initialize(root)
+            registry = record.parent / "references"
+            self.assertTrue((registry / "project/frontend/conventions/index.json").is_file())
+            metadata = "".join(p.read_text() for p in registry.rglob("*.json"))
+            self.assertNotIn("private-product-body-sentinel", metadata)
+            self.assertNotIn("private-project-convention-sentinel", metadata)
+            conventions = json.loads((registry / "project/frontend/conventions/index.json").read_text())
+            self.assertEqual(conventions["entries"][0]["id"], "AGENTS.md")
+
     def test_initializer_does_not_confuse_comments_or_negations_with_ignore_rule(self):
         for existing in ("# /.local/\n", "!/.local/\n", "prefix/.local/\n", " /.local/\n", "\t/.local/\n"):
             with self.subTest(existing=existing), tempfile.TemporaryDirectory() as temp:

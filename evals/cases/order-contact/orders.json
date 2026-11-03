@@ -1,4 +1,0 @@
-[
-  {"id":"DEMO-101","status":"preparing","items":[{"name":"샘플 노트","quantity":2}],"contact":{"name":"가상 고객 가","phone":"01000000001","address":"예시시 샘플로 1"}},
-  {"id":"DEMO-102","status":"shipped","items":[{"name":"샘플 펜","quantity":1}],"contact":{"name":"가상 고객 나","phone":"01000000002","address":"예시시 샘플로 2"}}
-]
