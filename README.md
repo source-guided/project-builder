@@ -2,19 +2,100 @@
 
 작업에 필요한 원천을 찾아 연결하는 참조 진입점입니다. 처음에는 이 저장소의 플러그인 하나만 받습니다. 기획·UX·UI·구현·검증·스킬 제작 지침은 각각 독립 원천에 있고, 기본 설치에 본문이나 전문 스킬을 포함하지 않습니다.
 
-## 시작하기
+## 설치하기
+
+사용할 컴퓨터의 Codex 데스크톱 앱 또는 CLI 환경에 설치합니다. 다른 컴퓨터에서 설치한 로컬 플러그인이 자동으로 함께 설치되는 것은 아닙니다. 처음에는 `project-builder` 하나만 설치하며 전문 원천은 작업 중 필요할 때 선택합니다.
+
+### Codex에 설치 맡기기
+
+설치할 컴퓨터에서 Codex를 열고 아래 요청을 그대로 붙여 넣어도 됩니다.
+
+```text
+https://github.com/source-guided/project-builder
+이 플러그인을 현재 Codex 환경에 설치해줘.
+
+현재 README를 읽고 Codex의 플러그인 설치 기능과 Git·Python 사용 가능 여부부터 확인해줘.
+지원되는 설치 방법으로 project-builder@source-guided를 설치해줘.
+기존 product-builder@tkddu1591-tools가 설치돼 있으면 새 플러그인 설치 성공 후 교체해줘.
+
+설치 후 project-builder:start만 이 플러그인의 전역 스킬로 노출되고,
+전문 스킬들은 전역에 등록되지 않는지 실제 로딩 목록으로 확인해줘.
+다른 플러그인과 설정, 기존 프로젝트의 원천 연결은 보존해줘.
+설치한 버전과 확인 결과, 새 채팅을 시작해야 하는지도 알려줘.
+```
+
+### 직접 설치하기
+
+**1. 준비 상태 확인**
+
+터미널에서 다음 명령을 실행합니다.
+
+```sh
+codex --version
+codex plugin --help
+git --version
+python3 --version
+```
+
+- Codex에 `plugin marketplace add`, `plugin add` 명령이 있어야 합니다. `codex`를 찾을 수 없거나 해당 명령이 없으면 현재 환경의 Codex 설치·버전·실행 경로부터 확인합니다.
+- Git은 GitHub 마켓플레이스를 가져오는 데 필요합니다. 온라인 설치에는 이 공개 저장소에 접근할 수 있어야 합니다.
+- Python 3.9 이상이 참조 도구 실행에 필요합니다. 별도 Python 패키지는 설치하지 않습니다. Windows에서 Python 명령이 `py -3`이면 해당 명령으로 버전을 확인하고 참조 도구를 실행합니다.
+- 로컬 검증은 macOS의 Python 3.9, CI는 Linux의 Python 3.12에서 수행했습니다. 다른 환경의 설치·실행 결과는 해당 환경에서 확인해야 합니다.
+
+**2. 마켓플레이스 등록 및 플러그인 설치**
 
 ```sh
 codex plugin marketplace add source-guided/project-builder --ref main
 codex plugin add project-builder@source-guided
 ```
 
-새 채팅에서 현재 작업을 말하거나 명시적으로 참조 진입점을 부릅니다. 모델과 추론 강도는 사용하는 환경에서 선택합니다.
+`source-guided`는 마켓플레이스 이름이고 `project-builder`는 플러그인 이름입니다. 기본 원천 저장소를 함께 복제하거나 전문 스킬을 전역 설치하지 않습니다.
+
+**3. 설치 확인**
+
+```sh
+codex plugin list --marketplace source-guided --json
+```
+
+결과의 `installed` 목록에서 `pluginId: "project-builder@source-guided"`, `installed: true`, `enabled: true`와 설치 버전을 확인합니다. 이 명령은 플러그인 설치 상태를 확인하며 개별 스킬 로딩 목록까지 보여주지는 않습니다. 새 세션에서 이 플러그인의 스킬이 `project-builder:start` 하나인지 확인합니다.
+
+예전 `product-builder@tkddu1591-tools`를 사용했다면 새 설치가 성공한 뒤 아래 명령으로 기존 플러그인을 제거합니다. 처음 설치하는 사람은 이 단계를 생략합니다.
+
+```sh
+codex plugin remove product-builder@tkddu1591-tools
+```
+
+**4. 새 채팅 또는 CLI 세션 시작**
+
+설치 후 새 채팅·CLI 세션을 시작합니다. 데스크톱 앱에서 목록이 갱신되지 않으면 앱을 다시 열고 새 채팅을 시작합니다. 이미 진행 중인 채팅에 주입된 예전 스킬 목록이 소급해서 교체됐다고 가정하지 않습니다.
+
+CLI에서 `/plugins`를 입력하거나 데스크톱 앱의 Plugins 화면에서 설치 상태를 확인할 수도 있습니다. 자세한 호스트 사용법은 [공식 플러그인 안내](https://learn.chatgpt.com/docs/plugins#plugin-directory-in-codex-cli)를 참고합니다.
+
+### GitHub에 직접 접근할 수 없는 경우
+
+허용된 반입 경로로 **이 저장소 전체**를 받아 압축을 풉니다. 저장소 루트에 `.agents/plugins/marketplace.json`과 `plugins/project-builder/`가 함께 있어야 합니다. `scripts/package.py`로 만든 플러그인 전용 ZIP에는 마켓플레이스 파일이 없으므로 아래 명령의 입력으로 사용할 수 없습니다.
+
+예를 들어 GitHub에서 받은 저장소 ZIP을 풀어 `project-builder-main` 폴더가 생겼다면, 그 폴더의 상위 디렉터리에서 실행합니다.
+
+```sh
+codex plugin marketplace add ./project-builder-main
+codex plugin add project-builder@source-guided
+```
+
+실제 폴더 이름이 다르면 첫 명령의 경로를 바꿉니다. 기존에 같은 이름의 Git 마켓플레이스를 등록했다면 별도 이름으로 중복 등록하거나 설정을 덮어쓰지 말고 현재 등록 위치를 먼저 확인합니다.
+
+이 방식은 GitHub에서 설치 파일을 가져오는 과정을 대체합니다. Codex 자체의 사용 연결이나 이후 선택할 외부 원천의 접근까지 오프라인으로 만드는 것은 아닙니다. 기본 원천의 원격 주소에 접근할 수 없으면 작업 중 접근 가능한 로컬·사내 원천을 연결하거나 별도 원천 없는 일반 방식을 선택합니다. [공식 로컬 마켓플레이스 등록 안내](https://developers.openai.com/plugins/build/plugins#add-a-marketplace-from-the-cli)
+
+## 처음 사용하기
+
+작업할 프로젝트를 열고 새 채팅에서 아래처럼 참조 진입점을 명시적으로 호출합니다. 모델과 추론 강도는 사용하는 환경에서 선택합니다.
 
 ```text
 $project-builder:start
 이 프로젝트의 프론트를 수정하려고 해. 관련 원천과 기존 결정을 찾아줘.
 ```
+
+새 채팅을 여는 것만으로 모든 요청이 이 진입점을 반드시 거치는 것은 아닙니다. 참조 흐름을 사용하려는 작업에서는 위처럼 호출합니다. 현재 프로젝트의 `AGENTS.md`와 실행 환경의 권한도 함께 적용됩니다.
 
 먼저 프로젝트에 연결된 자료를 확인합니다. 필요한 원천이 없을 때만 작업 문맥에서 선택을 제안합니다.
 
