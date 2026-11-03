@@ -11,6 +11,9 @@ Cases:
 - `reconciliation`: implement and execute a non-UI workflow with exact data semantics.
 - `review-screen`: improve a rendered review flow without removing necessary decision information.
 - `resume`: repair a narrow defect while recognizing stale prior verification.
+- `order-contact`: build a different product from an empty project using only the brief and synthetic data; no starter UI or previous solution is supplied.
+
+For meaningful workflow changes, follow [fresh-context validation](../docs/forward-testing.md). Preserve previous outputs, use a fresh agent, and keep evaluator criteria out of its input.
 
 `python3 scripts/prepare_eval.py --case reconciliation --output /absolute/temporary/project` prepares raw input and a prompt. Use the prompt with GPT-6.1 Sol. The evaluator criteria remain in this repository, outside the agent's fixture. Evaluation outputs should live outside tracked files or under `.local/evals/`.
 

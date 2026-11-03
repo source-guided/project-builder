@@ -100,7 +100,7 @@
             <p class="document-copy" id="document-content">구매 증빙이 있는 미사용 제품은 구매일로부터 30일 이내에 반품할 수 있습니다.</p>
             <form id="editor" hidden novalidate>
               <label class="visually-hidden" for="content">문서 내용</label>
-              <textarea id="content" aria-describedby="edit-help content-error" required></textarea>
+              <textarea id="content" aria-describedby="edit-help" required></textarea>
             </form>
           </div>
           <div class="edit-feedback">
@@ -169,6 +169,7 @@
       elements.content.value = current().content;
       elements['content-error'].hidden = true;
       elements.content.removeAttribute('aria-invalid');
+      elements.content.setAttribute('aria-describedby', 'edit-help');
       render();
       elements.content.focus({ preventScroll: true });
     });
@@ -179,6 +180,7 @@
       if (!content.trim()) {
         elements['content-error'].hidden = false;
         elements.content.setAttribute('aria-invalid', 'true');
+        elements.content.setAttribute('aria-describedby', 'edit-help content-error');
         elements.content.focus({ preventScroll: true });
         return;
       }
@@ -198,6 +200,14 @@
       elements.content.removeAttribute('aria-invalid');
       render();
       elements.edit.focus({ preventScroll: true });
+    });
+
+    elements.content.addEventListener('input', () => {
+      if (elements.content.value.trim()) {
+        elements['content-error'].hidden = true;
+        elements.content.removeAttribute('aria-invalid');
+        elements.content.setAttribute('aria-describedby', 'edit-help');
+      }
     });
 
     function recordDecision(decision) {

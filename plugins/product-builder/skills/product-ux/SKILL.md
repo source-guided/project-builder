@@ -28,6 +28,8 @@ When selecting an editing surface or changing stateful layouts, read [interactio
 
 Use the project's tokens, components, language, and accessibility conventions. Inspect a supplied reference through an available supported tool; missing Figma MCP is not by itself a reason to stop. Never label an uninspected design as matched. Do not introduce a new component library merely for a small change.
 
+Check accessible names and descriptions across valid/error/recovered states, not only visual visibility and focus. A hidden message can still be exposed when referenced by an accessible description; connect error text only when the error applies.
+
 ## Review the rendered flow
 
 Use an available browser or application tool to perform the task from its actual entry point. Inspect structure for labels and controls, and rendered screenshots for hierarchy, clipping, spacing, and visual states. Automated accessibility or DOM checks alone do not prove visual or usability quality.

@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CASES = ("reservation", "reconciliation", "review-screen", "resume")
+CASES = ("reservation", "reconciliation", "review-screen", "resume", "order-contact")
 
 
 def prepare(case: str, destination: Path) -> Path:

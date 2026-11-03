@@ -27,6 +27,13 @@
       "Fixes zero-versus-missing handling without unrelated architecture work",
       "Executes regression checks for zero, missing, and positive values",
       "Updates project-local state without overwriting unrelated user notes"
+    ],
+    "order-contact": [
+      "Builds from brief and data without inherited implementation or unrelated dashboard",
+      "Allows edits only for preparing orders and preserves leading zeroes",
+      "Explicit save/cancel, recoverable validation, and no silent draft loss on order switching",
+      "Justifies editing surface and verifies spatial continuity and keyboard/accessible error states",
+      "Reports real rendered and functional checks, distinguishing unverified behavior"
     ]
   }
 }

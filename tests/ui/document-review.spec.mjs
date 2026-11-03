@@ -50,6 +50,20 @@ test('a changed save creates an unapproved revision and keeps the old decision s
   await expect(page.locator('#status')).toHaveText('수정 요청됨 · 버전 2');
 });
 
+test('error descriptions are exposed only while the field is invalid', async ({ page }) => {
+  await page.locator('#edit').click();
+  const field = page.locator('#content');
+  await expect(field).toHaveAccessibleDescription('수정한 내용을 저장하면 새 버전이 생성되며 다시 검토해야 합니다.');
+  await field.fill('');
+  await page.locator('#save').click();
+  await expect(field).toHaveAttribute('aria-invalid', 'true');
+  await expect(field).toHaveAccessibleDescription(/저장할 문서 내용을 입력해주세요/);
+  await field.fill('수정한 내용');
+  await expect(page.locator('#content-error')).toBeHidden();
+  await expect(field).not.toHaveAttribute('aria-invalid', 'true');
+  await expect(field).toHaveAccessibleDescription('수정한 내용을 저장하면 새 버전이 생성되며 다시 검토해야 합니다.');
+});
+
 test('keyboard editing and long text remain accessible without horizontal overflow', async ({ page }, testInfo) => {
   await page.keyboard.press('Tab');
   await expect(page.locator('#edit')).toBeFocused();
