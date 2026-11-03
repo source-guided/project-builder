@@ -1,0 +1,53 @@
+{
+  "format": 1,
+  "profiles": {
+    "local-db": {
+      "driver": "sqlite",
+      "path": "./reference-data.db",
+      "writable": false
+    },
+    "http-store": {
+      "driver": "http",
+      "endpoint": "https://your-reference-service.example/documents",
+      "token_env": "REFERENCE_HTTP_TOKEN",
+      "writable": false
+    },
+    "repo": {
+      "driver": "github",
+      "endpoint": "https://api.github.com",
+      "repository": "YOUR_ORG/YOUR_REFERENCE_REPOSITORY",
+      "branch": "main",
+      "prefix": "references",
+      "token_env": "REFERENCE_GITHUB_TOKEN",
+      "writable": false
+    },
+    "database": {
+      "driver": "supabase",
+      "endpoint": "https://YOUR_PROJECT.supabase.co",
+      "table": "reference_documents",
+      "key_env": "REFERENCE_SUPABASE_KEY",
+      "token_env": "REFERENCE_SUPABASE_USER_TOKEN",
+      "writable": false
+    },
+    "objects": {
+      "driver": "s3",
+      "bucket": "YOUR_REFERENCE_BUCKET",
+      "prefix": "references",
+      "region": "YOUR_REGION",
+      "profile": "YOUR_AWS_PROFILE",
+      "writable": false
+    },
+    "wiki": {
+      "driver": "confluence",
+      "endpoint": "https://YOUR_SITE.atlassian.net/wiki",
+      "page_id": "123456",
+      "email_env": "REFERENCE_CONFLUENCE_EMAIL",
+      "token_env": "REFERENCE_CONFLUENCE_TOKEN",
+      "writable": false
+    },
+    "custom": {
+      "driver": "host",
+      "writable": false
+    }
+  }
+}

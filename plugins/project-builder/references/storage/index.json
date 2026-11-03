@@ -1,0 +1,115 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "guide",
+      "label": "참조 저장 위치와 공유 연결 절차",
+      "description": "참조 저장 위치와 공유 연결 절차",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../sources/reference-storage.md",
+      "topics": [
+        "storage",
+        "sharing",
+        "setup",
+        "registry"
+      ]
+    },
+    {
+      "id": "profiles-example",
+      "label": "저장소 프로필 설정 예제",
+      "description": "저장소 프로필 설정 예제",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../examples/storage-profiles.json",
+      "topics": [
+        "configuration",
+        "storage",
+        "sqlite",
+        "http",
+        "github",
+        "supabase",
+        "s3",
+        "confluence"
+      ]
+    },
+    {
+      "id": "supabase-schema-example",
+      "label": "Supabase 개인 문서 테이블 예제",
+      "description": "Supabase 개인 문서 테이블 예제",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../examples/supabase.sql",
+      "topics": [
+        "supabase",
+        "schema",
+        "rls",
+        "personal"
+      ]
+    },
+    {
+      "id": "github-contents",
+      "label": "GitHub Contents API",
+      "description": "GitHub Contents API",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://docs.github.com/en/rest/repos/contents",
+      "topics": [
+        "github",
+        "sha",
+        "permissions"
+      ]
+    },
+    {
+      "id": "supabase-api",
+      "label": "Supabase Data REST API",
+      "description": "Supabase Data REST API",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://supabase.com/docs/guides/api",
+      "topics": [
+        "supabase",
+        "rest"
+      ]
+    },
+    {
+      "id": "supabase-rls",
+      "label": "Supabase 행 접근 권한",
+      "description": "Supabase 행 접근 권한",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://supabase.com/docs/guides/database/postgres/row-level-security",
+      "topics": [
+        "supabase",
+        "rls",
+        "sharing"
+      ]
+    },
+    {
+      "id": "s3-conditions",
+      "label": "S3 조건부 쓰기",
+      "description": "S3 조건부 쓰기",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-writes.html",
+      "topics": [
+        "s3",
+        "etag",
+        "conflict"
+      ]
+    },
+    {
+      "id": "confluence-properties",
+      "label": "Confluence Cloud Content Properties API",
+      "description": "Confluence Cloud Content Properties API",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-content-properties/",
+      "topics": [
+        "confluence",
+        "property",
+        "permissions"
+      ]
+    }
+  ]
+}

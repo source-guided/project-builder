@@ -12,3 +12,5 @@ python3 <plugin-root>/scripts/references.py read --index <plugin-root>/reference
 ```
 
 Start from the user's task and existing project connections. Default sources are suggestions, not dependencies. Do not fetch their bodies, clone them, install their capabilities, or select them before the user chooses a relevant connection. Preserve existing choices and authorization. Source skills are read contextually through their owning references; they are never added to the global skill list by this client.
+
+Reference registries and connection choices may live in the user's local or remote store. `.local` above is an example for a session trace, not a requirement for data or references. For storage, sharing, or database setup, resolve `storage` / `guide` from the package reference index. Reuse the selected store and access context; do not silently copy a shared registry into a new local authority or change its permissions.

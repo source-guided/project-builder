@@ -11,10 +11,8 @@ SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
 if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
 
-from reference_catalog import Catalog
-from reference_io import load_index
-from reference_http import IndexReader
-from reference_registry import change
+from reference_registry import change, initialize
+from document_stores import Stores, load_config
 from reference_session import Session
 from reference_workflow import Workflow
 
@@ -22,6 +20,8 @@ from reference_workflow import Workflow
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
+    init = commands.add_parser("init")
+    init.add_argument("--index",required=True)
     listing = commands.add_parser("list")
     listing.add_argument("--index", required=True)
     listing.add_argument("--index-access", choices=("file", "web", "connector"))
@@ -65,7 +65,7 @@ def main(argv=None):
     audit.add_argument("--scope", default="local")
     for name in ("add", "update", "remove"):
         item = commands.add_parser(name)
-        item.add_argument("--index", type=Path, required=True)
+        item.add_argument("--index", required=True)
         item.add_argument("--id", required=True)
         item.add_argument("--expected-digest", required=name != "add")
         if name == "add":
@@ -77,7 +77,10 @@ def main(argv=None):
             item.add_argument("--topics", nargs="*", default=[])
         if name == "update":
             item.add_argument("--patch", type=Path, required=True)
+    for command in commands.choices.values():
+        command.add_argument("--store-config",type=Path)
     args = parser.parse_args(argv)
+    stores = Stores(load_config(args.store_config))
     requests = None
     if args.command == "read-many":
         requests = json.loads(args.requests.read_text())
@@ -87,10 +90,12 @@ def main(argv=None):
     roots = requests if requests is not None else args.index if isinstance(getattr(args, "index", None), list) else [args.index] if getattr(args, "index", None) else []
     if method:
         roots=[{"index":root,"access":method} for root in roots]
-    catalog = Catalog(IndexReader(roots))
-    if args.command == "list":
+    catalog = stores.catalog(roots)
+    if args.command == "init":
+        result = initialize(args.index,stores=stores)
+    elif args.command == "list":
         observed = catalog.read_index(args.index, access=method)
-        result = {**observed["document"], "index_digest": observed["digest"]}
+        result = {**observed["document"], "index_digest": observed["digest"], "index_revision": observed.get("revision")}
     elif args.command == "walk":
         result = catalog.walk([{"index": p, "access": method} for p in args.index] if method else args.index, max_indexes=args.max_indexes)
     elif args.command == "discover":
@@ -104,7 +109,7 @@ def main(argv=None):
                      "kind": args.kind, "access": args.access, "locator": args.locator, "topics": args.topics}
         result = change(args.index, args.id, operation=args.command, entry=entry,
                         patch=json.loads(args.patch.read_text()) if args.command == "update" else None,
-                        expected_digest=args.expected_digest)
+                        expected_digest=args.expected_digest,stores=stores)
     else:
         workflow = Workflow(args.trace, scope=args.scope, catalog=catalog, source_roots=getattr(args,"source_root",[]))
         if args.command == "read":

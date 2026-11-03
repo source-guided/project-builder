@@ -24,6 +24,21 @@
       ]
     },
     {
+      "id": "storage",
+      "label": "참조 저장소 연결",
+      "description": "개인·팀 참조 저장소와 서비스 어댑터 연결 안내",
+      "kind": "reference",
+      "access": "file",
+      "locator": "storage/index.json",
+      "topics": [
+        "storage",
+        "registry",
+        "sharing",
+        "database",
+        "cloud"
+      ]
+    },
+    {
       "id": "version",
       "label": "클라이언트 정보",
       "description": "클라이언트 정보",

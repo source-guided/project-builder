@@ -69,7 +69,7 @@ class Catalog:
             observed = self.reader(location)
         canonical = index_address(observed.get("address", location), access)
         return {"document": validate_index(observed["document"]), "digest": observed["digest"],
-                "address": canonical, "access": access}
+                "address": canonical, "access": access, "revision": observed.get("revision")}
 
     def bind(self, index, item, digest, access):
         return {"reference": {"index": index, "id": item["id"], "access": access},

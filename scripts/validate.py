@@ -62,7 +62,7 @@ def validate(root: Path = ROOT):
     skills = sorted((plugin / "skills").glob("*/SKILL.md"))
     assert {p.relative_to(plugin).as_posix() for p in plugin.rglob("SKILL.md")} == {"skills/start/SKILL.md"}, "Only the reference entry skill may be exposed"
     assert {p.parent.name for p in skills} == {"start"}
-    core_sources = {"sources/governance/reference-routing.md", "sources/reference-entry.md", "sources/source-contract.md"}
+    core_sources = {"sources/governance/reference-routing.md", "sources/reference-entry.md", "sources/source-contract.md", "sources/reference-storage.md"}
     assert {p.relative_to(plugin).as_posix() for p in (plugin / "sources").rglob("*") if p.is_file()} == core_sources, "Domain source bodies cannot ship with the reference entrypoint"
     assert not (plugin / "capabilities").exists(), "Source capabilities cannot be bundled"
     defaults = json.loads((plugin / "catalog/defaults.json").read_text())
