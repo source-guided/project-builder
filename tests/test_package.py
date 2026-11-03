@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from package import package
 from validate import plugin_files, validate
 
-spec = importlib.util.spec_from_file_location("init_context", ROOT / "plugins/product-builder/skills/start/scripts/init_context.py")
+spec = importlib.util.spec_from_file_location("init_context", ROOT / "plugins/project-builder/scripts/init_context.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
@@ -22,7 +22,7 @@ class PackageTest(unittest.TestCase):
         (plugin / "package-files.json").write_text(json.dumps(["package-files.json", *names]))
 
     def test_current_package_contract(self):
-        self.assertEqual(validate()[0], 5)
+        self.assertEqual(validate()[0], 1)
 
     def test_initializer_preserves_work_and_is_repeatable(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -53,13 +53,14 @@ class PackageTest(unittest.TestCase):
             (root / "README.md").write_text("private-product-body-sentinel")
             (root / "AGENTS.md").write_text("private-project-convention-sentinel")
             record = module.initialize(root)
-            registry = record.parent / "references"
-            self.assertTrue((registry / "project/frontend/conventions/index.json").is_file())
+            registry = record.parent
+            self.assertTrue((registry / "index.json").is_file())
+            self.assertFalse((registry / "project/frontend").exists())
             metadata = "".join(p.read_text() for p in registry.rglob("*.json"))
             self.assertNotIn("private-product-body-sentinel", metadata)
             self.assertNotIn("private-project-convention-sentinel", metadata)
-            conventions = json.loads((registry / "project/frontend/conventions/index.json").read_text())
-            self.assertEqual(conventions["entries"][0]["id"], "AGENTS.md")
+            conventions = json.loads((registry / "index.json").read_text())
+            self.assertIn("AGENTS.md", [entry["id"] for entry in conventions["entries"]])
 
     def test_initializer_does_not_confuse_comments_or_negations_with_ignore_rule(self):
         for existing in ("# /.local/\n", "!/.local/\n", "prefix/.local/\n", " /.local/\n", "\t/.local/\n"):
@@ -69,7 +70,7 @@ class PackageTest(unittest.TestCase):
                 module.initialize(root)
                 self.assertEqual((root / ".gitignore").read_text(), existing + "/.local/\n")
                 subprocess.run(["git", "init", "-q", str(root)], check=True)
-                ignored = subprocess.run(["git", "check-ignore", "-q", ".local/product-builder/work-record.md"], cwd=root)
+                ignored = subprocess.run(["git", "check-ignore", "-q", ".local/project-builder/work-record.md"], cwd=root)
                 self.assertEqual(ignored.returncode, 0)
 
     def test_archive_does_not_include_neighboring_private_context(self):

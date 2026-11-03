@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from evaluation_execution import verify_baseline, verify_execution
+from evaluation_sources import verify_reference_source
 
 
 STATUSES = {"observed", "finding", "unverified", "not_applicable"}
@@ -34,14 +35,17 @@ def check_report(review):
             raise ValueError("Duplicate check ID or unsupported status/method")
         seen.add(check["id"])
         source = check.get("source", {})
-        if not isinstance(source, dict) or source.get("kind") not in {"input", "package"}:
-            raise ValueError("Source must declare input or package ownership")
+        if not isinstance(source, dict) or source.get("kind") not in {"input", "package", "reference"}:
+            raise ValueError("Source must declare input, package or recorded reference ownership")
         if not all(isinstance(source.get(k), str) and source[k].strip() for k in ("path", "locator")):
             raise ValueError("Source needs a path and locator")
-        owner = review / "input" if source["kind"] == "input" else Path(baseline["package_path"])
-        source_path = (owner / source["path"]).resolve()
-        if not source_path.is_relative_to(owner) or not source_path.is_file():
-            raise ValueError("Check source escapes its declared owner or does not exist")
+        if source["kind"] == "reference":
+            verify_reference_source(review,source,baseline["package_path"])
+        else:
+            owner = review / "input" if source["kind"] == "input" else Path(baseline["package_path"])
+            source_path = (owner / source["path"]).resolve()
+            if not source_path.is_relative_to(owner) or not source_path.is_file():
+                raise ValueError("Check source escapes its declared owner or does not exist")
         if check["status"] in {"observed", "finding"}:
             if check["method"] == "scope":
                 raise ValueError("Scope statements are not observed behavior")

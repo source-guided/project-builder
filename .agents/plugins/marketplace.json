@@ -1,10 +1,19 @@
 {
-  "name": "tkddu1591-tools",
-  "interface": {"displayName": "tkddu1591 Tools"},
-  "plugins": [{
-    "name": "product-builder",
-    "source": {"source": "local", "path": "./plugins/product-builder"},
-    "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
-    "category": "Productivity"
-  }]
+  "name": "source-guided",
+  "interface": {
+    "displayName": "Source Guided"
+  },
+  "plugins": [
+    {
+      "name": "project-builder",
+      "source": {
+        "source": "local",
+        "path": "./plugins/project-builder"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Productivity"
+    }
+  ]
 }

@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from validate import validate
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN = ROOT / "plugins/product-builder"
+PLUGIN = ROOT / "plugins/project-builder"
 sys.path.insert(0, str(PLUGIN / "scripts"))
 from reference_catalog import Catalog
 from reference_io import load_index
@@ -25,22 +25,22 @@ class ReferenceRoutingTest(unittest.TestCase):
     def test_source_links_cannot_bypass_reference_indexes(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            shutil.copytree(PLUGIN, root / "plugins/product-builder")
+            shutil.copytree(PLUGIN, root / "plugins/project-builder",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
             shutil.copytree(ROOT / ".agents", root / ".agents")
-            source = root / "plugins/product-builder/skills/product-ux/sources/workflow.md"
+            source = root / "plugins/project-builder/sources/reference-entry.md"
             original = source.read_text()
-            for link in ("https://example.com/source", "feedback-and-actions.md"):
+            for link in ("https://example.com/source", "source-contract.md"):
                 with self.subTest(link=link):
                     source.write_text(original + f"\n[Direct source]({link})\n")
                     with self.assertRaisesRegex(AssertionError, "return through a reference"):
                         validate(root)
-            source.write_text(original + "\n[Relevant references](../../../references/design/ux/index.json)\n")
-            self.assertEqual(validate(root)[0], 5)
+            source.write_text(original + "\n[Relevant references](../references/usage/index.json)\n")
+            self.assertEqual(validate(root)[0], 1)
 
     def test_git_index_rejects_custom_content_even_when_worktree_copy_is_removed(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            shutil.copytree(PLUGIN, root / "plugins/product-builder")
+            shutil.copytree(PLUGIN, root / "plugins/project-builder",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
             shutil.copytree(ROOT / ".agents", root / ".agents")
             subprocess.run(["git", "init", "-q", str(root)], check=True)
             source = root / ".local/consumer.txt"
@@ -54,7 +54,7 @@ class ReferenceRoutingTest(unittest.TestCase):
     def test_publication_inventory_requires_review_of_new_public_files(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            shutil.copytree(PLUGIN, root / "plugins/product-builder")
+            shutil.copytree(PLUGIN, root / "plugins/project-builder",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
             shutil.copytree(ROOT / ".agents", root / ".agents")
             (root / ".gitignore").write_text(".local/\n")
             approved = [p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()]
@@ -66,7 +66,7 @@ class ReferenceRoutingTest(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError, "Unreviewed public files"):
                 validate(root)
             candidate.unlink()
-            self.assertEqual(validate(root)[0], 5)
+            self.assertEqual(validate(root)[0], 1)
             subprocess.run(["git", "add", "."], cwd=root, check=True)
             candidate.write_text("new candidate")
             subprocess.run(["git", "add", "new-case.txt"], cwd=root, check=True)
@@ -82,8 +82,8 @@ class ReferenceRoutingTest(unittest.TestCase):
     def test_horizontal_sources_have_independent_receipts(self):
         with tempfile.TemporaryDirectory() as temp:
             flow = self.bootstrap(Path(temp) / "trace.jsonl")
-            flow.read(PLUGIN / "references/delivery/index.json", "brief")
-            flow.read(PLUGIN / "references/design/ux/index.json", "workflow")
+            flow.read(PLUGIN / "references/usage/index.json", "entry")
+            flow.read(PLUGIN / "references/usage/index.json", "source-contract")
             report = flow.audit()
             self.assertEqual(report["source_accesses"], 3)
             self.assertTrue(report["current_policy_read"])
@@ -103,12 +103,12 @@ class ReferenceRoutingTest(unittest.TestCase):
     def test_governance_is_an_execution_requirement_not_a_discovery_requirement(self):
         with tempfile.TemporaryDirectory() as temp:
             trace = Path(temp) / "trace.jsonl"
-            index = PLUGIN / "references/delivery/index.json"
-            resolved = Catalog(load_index).resolve(index, "brief")
+            index = PLUGIN / "references/usage/index.json"
+            resolved = Catalog(load_index).resolve(index, "entry")
             self.assertEqual(resolved["kind"], "source")
             self.assertFalse(trace.exists())
             with self.assertRaisesRegex(ValueError, "governing"):
-                Workflow(trace).read(index, "brief")
+                Workflow(trace).read(index, "entry")
             self.assertFalse(trace.exists())
 
     def test_reference_metadata_rejects_copied_source_and_authoritative_values(self):

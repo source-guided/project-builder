@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Builder"
+  short_description: "Find and connect sources for the current task"
+  default_prompt: "Use $start to find and connect sources for my current task."

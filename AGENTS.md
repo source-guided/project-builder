@@ -1,16 +1,10 @@
-# Product Builder
+# Project Builder reference client
 
-이 저장소는 여러 도메인의 제품 구현을 돕는 스킬 중심 플러그인이다.
-
-- 하네스 작업을 시작하면 [공통 참조 색인](plugins/product-builder/references/index.json)의 governance 참조를 통해 실제 원칙 원천을 먼저 읽고 적용한다. 이 문서에서 원칙 본문을 중복 소유하지 않는다.
-- 요구사항, 출처가 있는 보충 설명, 제안, 추론을 구분한다. 제공되지 않은 완료 조건이나 평가 가중치를 만들지 않는다.
-- 특정 예제를 전체 도메인의 필수 기능으로 만들지 않는다. UI 없는 과업에는 UI 절차를 생략한다.
-- 공개 여부는 파일명이나 폴더명이 아니라 특정 과제에 대한 의존성으로 판단한다. 범용 하네스 자기개선 절차·입력 준비기·모델 실행기·도구 자체의 회귀 검사는 공개에 둔다. 개별 과제·데이터·전용 채점 로직·답안·결과·프로젝트 설정과 참조는 사용하는 프로젝트 또는 무시된 `.local/`에 둔다. 공통 UX 예제는 명시적으로 구분한다.
-- 스킬은 요구사항과 사용자 권한을 확장하지 않는다. 단계별 승인, 외부 전송, 모델 전환을 임의로 추가하지 않는다.
-- Python 표준 라이브러리를 우선한다. 새 의존성은 명확한 필요가 있을 때만 추가한다.
-- 모델과 추론 강도는 호출자가 선택한다. 저장소는 특정 모델을 기본값이나 필수 조건으로 지정하지 않는다. 평가에서는 실제 요청한 설정과 확인 가능한 실행 정보를 기록하고, 접근 실패 시 임의로 다른 설정으로 바꾸지 않는다.
-- 스킬의 의사결정 흐름을 바꾸면 기존 결과의 회귀 검사와 별도로 새 맥락에서의 적용을 확인한다. [범용 자기개선 절차](docs/forward-testing.md)를 따르고 기존 산출물·정답·평가기준을 구현 에이전트에게 주지 않는다. 개별 실행 입력과 결과는 로컬에서 관리한다.
-- 변경 후 `python3 scripts/validate.py`와 `python3 -m unittest discover -s tests -v`를 실행한다.
-- 공개 UI 예제의 구조·상태·스타일을 바꾸면 `npm run test:ui`로 실제 브라우저 회귀를 확인한다. 동작하는 최종 캡처를 다시 열어 검사하고 문서의 증거를 갱신한다.
-- 패키지 검증과 모델 행동 평가, 실제 제품 실행 검증을 구분해서 보고한다.
-- 배포는 `scripts/package.py`로 만든다. 로컬 자료를 통째로 압축하지 않는다.
+- Start through `plugins/project-builder/references/index.json` and its governance source. The source participation contract is reached through `usage` / `source-contract`.
+- This repository owns reference entry, selection, metadata, transport/session tools and their generic validation. Domain instructions and examples live in independent source repositories and must not re-enter this package.
+- Only `skills/start` is globally exposed. Source-local capabilities are discovered after reference entry, never installed automatically.
+- Model, effort and task time belong to the caller. Use existing project connections and ask only about missing material choices. Default/custom/general are all supported authoring choices.
+- Preserve user work and keep private bindings, test tasks and outputs under ignored `.local/`.
+- Validate with `python3 scripts/validate.py` and `python3 -m unittest discover -s tests -v`. Validate connected source repositories with `scripts/validate_source.py`; domain-specific checks stay with their owner.
+- After changing the decision workflow, use a fresh context to verify relevant source selection behavior. Keep prior answers out of its supplied context. Do not impose model selection in this repository.
+- Package with `scripts/package.py`; it must not read or depend on neighboring source repositories.

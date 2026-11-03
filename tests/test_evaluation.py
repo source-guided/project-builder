@@ -211,12 +211,32 @@ class IndependentReviewTest(unittest.TestCase):
             review = review_eval.prepare_review(self.prepare(root))
             report = self.report(review, status="finding")
             report["checks"][0]["source"] = {
-                "kind": "package", "path": "skills/verification/sources/workflow.md", "locator": "Evidence and completion"}
+                "kind": "package", "path": "sources/source-contract.md", "locator": "Evidence and completion"}
             (review / "report.json").write_text(json.dumps(report))
             self.assertEqual(evaluation_report.check_report(review)["counts"]["finding"], 1)
-            (root / "project-plugin/skills/verification/sources/workflow.md").write_text("Changed policy")
+            (root / "project-plugin/sources/source-contract.md").write_text("Changed policy")
             with self.assertRaises(ValueError):
                 evaluation_report.check_report(review)
+
+    def test_external_source_attribution_requires_a_recorded_read_and_matching_address(self):
+        sys.path.insert(0,str(ROOT/"plugins/project-builder/scripts"))
+        from reference_workflow import Workflow
+        for invalid in (None,"path","receipt","trace","unread"):
+            with self.subTest(invalid=invalid),tempfile.TemporaryDirectory() as temp:
+                root=Path(temp);review=review_eval.prepare_review(self.prepare(root))
+                provider=root/"provider";provider.mkdir();body=provider/"policy.md";body.write_text("Source-owned review guidance")
+                index=provider/"index.json";index.write_text(json.dumps({"format":1,"entries":[{"id":"policy","label":"Policy","kind":"source","access":"relative","locator":"policy.md","topics":[]}]}))
+                trace=review/"evidence/source.jsonl";workflow=Workflow(trace)
+                workflow.read(ROOT/"plugins/project-builder/references/governance/index.json","routing-policy")
+                request=workflow.prepare(index,"policy") if invalid=="unread" else workflow.read(index,"policy")["reference"]
+                report=self.report(review);source={"kind":"reference","path":str(body.resolve()),"locator":"Source policy","trace":"evidence/source.jsonl","receipt":request["receipt"]}
+                if invalid=="path":source["path"]=str(provider/"other.md")
+                if invalid=="receipt":source["receipt"]="missing"
+                if invalid=="trace":source["trace"]="../outside.jsonl"
+                report["checks"][0]["source"]=source;(review/"report.json").write_text(json.dumps(report))
+                if invalid is None:self.assertEqual(evaluation_report.check_report(review)["counts"]["observed"],1)
+                else:
+                    with self.assertRaises(ValueError):evaluation_report.check_report(review)
 
     def test_process_success_without_report_is_not_review_success(self):
         with tempfile.TemporaryDirectory() as temp:

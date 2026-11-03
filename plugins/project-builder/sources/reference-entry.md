@@ -1,0 +1,11 @@
+# Choose sources in the current task
+
+First inspect the user's request, applicable host instructions and existing project reference connections. A source lookup can be the whole task. Do not turn a frontend request into a mandatory sequence of planning, design, implementation and review, or assume any source is already installed.
+
+Use `sources.py offers --query <task terms>` to inspect optional default metadata. This operation does not visit their indexes or fetch their contents. Present only relevant gaps: for example, an unconnected design source for a frontend task. Ask whether to connect an applicable default, connect the user's local/DB/Confluence/other source, or proceed with no additional authored source using the AI's ordinary approach. Existing project rules still apply. Do not ask to download every source at setup.
+
+Record the user's choice per intent using `sources.py select --state <project-owned file> --intent <intent> --mode default|custom|general`. A default selection names a candidate ID; a custom selection supplies the observed index and access method. General mode has no source binding and never becomes an implicit default. It is especially useful when no skill-authoring guidance is selected: the user can choose a default authoring source, their own guidance, or the AI's general method. Do not silently replace this preference later or repeat the question for the same scope.
+
+For a connected source, `sources.py discover --state <file> --intent <intent> --query <terms>` explores only its metadata. Enter through its own index, read its entry instructions and find a relevant internal capability. Read local content with `references.py read`; use `prepare-read`, an authorized host reader, and `record` for web/connector content. A connection does not install or activate skills globally. Other sources needed during the work return through the same reference and choice workflow.
+
+Changing a task or discovering a missing domain can justify a new connection question. Changing a source revision requires freshness checks, not blanket reapproval. Do not invent locations or treat source availability as proof of authority. State unavailable branches and continue independent work. Connection and session files belong to the consuming project; do not publish its private bindings in this package.

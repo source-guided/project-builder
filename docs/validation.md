@@ -1,40 +1,15 @@
-# Plugin validation
+# Validation ownership
 
-## Reproduce package checks
+The core package must run without neighboring domain sources and expose only `skills/start`. `scripts/validate.py` checks the explicit package/publication inventories, the internal reference graph, and the absence of bundled domain capabilities. It does not fetch default sources.
 
-```sh
-python3 scripts/validate.py
-python3 -m unittest discover -s tests -v
-npm ci
-npx playwright install chromium
-npm run test:ui
-python3 scripts/package.py
-```
+`source.json` and `source-files.json` belong to each independent source. `scripts/validate_source.py --source <root>` checks its source-only exposure, internal capability locations, owner-contained references, publication inventory and reference-mediated navigation. It does not decide whether UX, engineering or authoring advice is good. Those criteria and checks belong to the corresponding source.
 
-The package validator checks the five skill entry points, metadata-only reference indexes, local source locations, source Markdown links, the explicit distributable-file allowlist, and publication boundaries. Unit tests exercise file preservation, invalid registration, symlinks, independent/concurrent receipts, partial failures, bounded discovery, HTTP index access boundaries, metadata maintenance conflicts, cache invalidation, moved installations, execution provenance (fresh outputs and executable permissions), consumer-local registries, and archive exclusion.
+Core regressions cover independent/concurrent receipts, partial discovery, access boundaries, portable relative references, stale binding updates, default/custom/general choices, direct-document connections, exact publication boundaries and execution provenance. Default offers must perform no external fetch and no source install. Changing an established choice requires the observed state digest.
 
-The common UX example has browser regression coverage at actual desktop and narrow viewports. Its thresholds apply to that example's expected stable elements; they are not universal layout rules.
+Source-local capabilities are not globally registered merely because their repository is connected. The core distribution is tested in isolation; source repositories are tested separately. This is a package/exposure contract, not a claim that the client can prevent an operator from manually copying files into an unrelated host's skill directory.
 
-## Public repository boundary
+Generic evaluation tooling remains development-only. The caller chooses model/effort and the supplied task/context. Preserved inputs, core package and execution harness retain their hashes. Reviewers derive outcomes from user input and any already-selected source guidance; no domain review source is bundled or silently selected. Runtime claims use execution captures tied to the unchanged artifact, command, test inputs and evidence. These records do not prove coverage or evidence truth.
 
-Generic harness self-improvement methods, input preparers, model runners, and their own regression tests are public development tools. `scripts/prepare_eval.py` accepts consumer-owned input and optional user clarifications, preserving their provenance separately from evaluator material. `scripts/run_eval.py --review` separates implementation execution from a fresh reviewer. `scripts/review_eval.py` prepares an unchanged first artifact and delegates report checking to `evaluation_report.py`; `evaluation_execution.py` captures the actual exercised revision, command and evidence. None includes a task catalogue, product quality score, or custom grader.
+POSIX process-group cleanup is shared by implementation, review and evidence capture; detached sessions and non-POSIX execution remain outside this adapter. Relative standalone file arguments are tracked from the execution working directory. Indirect dependencies are declared using `--test-input`. Interpreter identity remains separate from application-file integrity.
 
-Specific briefs, datasets, rubrics, generated apps, answers, traces, results, and project bindings stay in the consuming project or ignored `.local/`. This distinction is about task dependency, not a folder's name. The common UX example is an explicitly designated reusable teaching asset.
-
-`publication-files.json` lists reviewed public repository files; the installation package has its own narrower allowlist. New public files require explicit inventory review. The validator checks Git-index membership as well as unignored files; removing a worktree copy does not make an indexed private file safe to publish. The inventory detects unexpected files but cannot determine whether their contents are task-specific. Review actual staged content before publication.
-
-## Evidence boundaries
-
-A reference trace audit validates recorded transitions; it cannot prove that an agent made no unrecorded reads. Markdown link checks do not interpret arbitrary prose or inline commands. Review actual tool use as well as the trace.
-
-Independent-review validation checks source/evidence ownership and captured execution provenance, not truth or coverage completeness. Required behavior with no executable evidence remains unverified; successful process exit does not override it. The baseline protects input, artifact, plugin, harness and report contract. Reproduction uses an unchanged runtime source copy with mutable state/results outside that tree; repairing that copy invalidates its execution evidence.
-
-`evaluation_inputs.py` owns test-input tracking. Standalone file arguments, including relative paths, are resolved against the recorded execution working directory. Review-local scripts outside `runtime/` are hashed and checked again with their original path binding; changed symlink targets cannot reuse an earlier input hash. Use `--test-input <review-relative-file>` for indirect dependencies, files read by inline code, or paths embedded in tool-specific options. Automatic argument inspection does not parse arbitrary shell/program semantics.
-
-`evaluation_process.py` owns process-group lifetime for implementation, independent review, and evidence capture. It ends remaining group members before returning on normal completion or timeout, so completion snapshots and evidence hashing happen after cleanup. This adapter currently supports POSIX process groups; other operating systems fail explicitly before starting a process. Processes that deliberately detach into another session are outside this lifecycle boundary; it is not an OS security containment mechanism.
-
-Model behavior is evaluated separately in local development work using the caller's selected configuration. No specific model or effort is required by the package; execution records distinguish explicit arguments from inherited CLI configuration. Dispatch configuration is not independent provider attestation of the serving model. A repaired example and a new-context run are different evidence; an earlier failed attempt stays failed.
-
-Release notes identify the published commit and observed package, regression, CI, and installation results. Task-specific tooling and evidence remain local; generic improvement tooling stays public. Finite evaluations do not establish universal compliance, user research, live integration, deployment, or stakeholder acceptance.
-
-For the native CLI path, also exercise execution capture under the installed Codex workspace sandbox without a model call. Unit mocks alone do not establish write permissions. Record the local CLI version and distinguish this test from a successful model-backed run.
+Finite tests, source audits, model behavior, product acceptance and publication are separate claims. Individual task fixtures and results stay in ignored local evidence; they do not become new requirements for all sources.

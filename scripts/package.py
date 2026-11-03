@@ -31,7 +31,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     validate()
     version = json.loads((PLUGIN / "plugin.json").read_text())["version"]
-    destination = args.output or ROOT / "dist" / f"product-builder-{version}.zip"
+    destination = args.output or ROOT / "dist" / f"project-builder-{version}.zip"
     digest = package(destination)
     destination.with_suffix(destination.suffix + ".sha256").write_text(f"{digest}  {destination.name}\n")
     print(f"{destination}\nsha256: {digest}")

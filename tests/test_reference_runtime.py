@@ -13,7 +13,7 @@ import subprocess
 import unicodedata
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN = ROOT / "plugins/product-builder"
+PLUGIN = ROOT / "plugins/project-builder"
 sys.path.insert(0, str(PLUGIN / "scripts"))
 from reference_catalog import Catalog
 from reference_io import load_index

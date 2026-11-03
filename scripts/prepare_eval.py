@@ -10,7 +10,7 @@ from evaluation_artifacts import EXCLUDED_DIRECTORIES, executable_manifest, file
 
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS_FILES = (
-    "evaluation_dispatch.py", "evaluation_process.py", "evaluation_inputs.py",
+    "evaluation_sources.py", "evaluation_dispatch.py", "evaluation_process.py", "evaluation_inputs.py",
     "evaluation_artifacts.py", "evaluation_execution.py", "evaluation_report.py", "evaluation_contract.json",
     "prepare_eval.py", "review_eval.py", "run_eval.py",
 )
@@ -51,7 +51,7 @@ def prepare(source: Path, destination: Path, *, context: Path = None) -> Path:
     if context is not None:
         shutil.copytree(context, destination / "user-context")
     input_files = snapshot(destination, raw_input)
-    shutil.copytree(ROOT / "plugins/product-builder", package, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    shutil.copytree(ROOT / "plugins/project-builder", package, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
     harness.mkdir()
     for name in HARNESS_FILES:
         shutil.copy2(Path(__file__).parent / name, harness / name)

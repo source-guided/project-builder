@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "source-contract",
+      "label": "원천 참여 계약",
+      "description": "원천 참여 계약",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../sources/source-contract.md",
+      "topics": [
+        "source-contract"
+      ]
+    },
+    {
+      "id": "entry",
+      "label": "작업별 원천 선택과 연결",
+      "description": "작업별 원천 선택과 연결",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../sources/reference-entry.md",
+      "topics": [
+        "entry"
+      ]
+    },
+    {
+      "id": "initializer",
+      "label": "프로젝트 참조 초기화 도구",
+      "description": "프로젝트 참조 초기화 도구",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../scripts/init_context.py",
+      "topics": [
+        "initializer"
+      ]
+    }
+  ]
+}

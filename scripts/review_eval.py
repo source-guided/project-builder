@@ -86,9 +86,9 @@ def prepare_review(project: Path, *, harness_source=None) -> Path:
     }, indent=2) + "\n")
     (review / "evidence").mkdir()
     (review / "prompt.txt").write_text(
-        f"First read the Product Builder verification skill at {package / 'skills/verification/SKILL.md'} "
+        f"First read the Product Builder verification skill at {package / 'skills/start/SKILL.md'} "
         "and complete its reference bootstrap before opening task or artifact files. Applicable host instructions may be read first.\n"
-        "Follow the independent-review source through the package delivery reference index for review decisions.\n"
+        "Use source-specific review guidance only when it is already connected for this task. Do not install or automatically select default sources. Derive the expected behavior from preserved user input and distinguish confirmed requirements from assumptions.\n"
         f"Preserved user input is at {review / 'input'}; the first completed artifact is at {review / 'subject'}.\n"
         f"The report and execution contract is at {review / 'contract.json'}. Discover it through a local reference. "
         "Write report.json using that contract and the actual evidence.\n"

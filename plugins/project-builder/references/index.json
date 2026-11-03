@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "entries": [
+    {
+      "id": "governance",
+      "label": "참조 체계 규약",
+      "description": "참조 체계 규약",
+      "kind": "reference",
+      "access": "file",
+      "locator": "governance/index.json",
+      "topics": [
+        "governance"
+      ]
+    },
+    {
+      "id": "usage",
+      "label": "참조 연결과 선택",
+      "description": "참조 연결과 선택",
+      "kind": "reference",
+      "access": "file",
+      "locator": "usage/index.json",
+      "topics": [
+        "usage"
+      ]
+    },
+    {
+      "id": "version",
+      "label": "클라이언트 정보",
+      "description": "클라이언트 정보",
+      "kind": "reference",
+      "access": "file",
+      "locator": "version/index.json",
+      "topics": [
+        "version"
+      ]
+    }
+  ]
+}
