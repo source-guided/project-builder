@@ -8,6 +8,8 @@ For a new UI direction or a request for broader references, follow the design/UI
 
 For each primary role/task, identify the trigger, information already known, decisions to make, completion outcome, and recovery path. Separate role-specific workflows when their decisions differ; share screens when the task and context genuinely match.
 
+For screens with multiple roles, filters, selected details, or expandable tools, resolve `task-navigation` in the [UX reference index](../../../references/design/ux/index.json). Establish the role's real entry path and a clear current selection before polishing controls. Review a concrete find-and-act task from visible UI rather than proving only that the components exist.
+
 Produce a compact flow and low-fidelity layout proportional to the change. For each visible region state:
 - Which user decision or action needs it now?
 - Is it primary, contextual detail, or unnecessary in this view?

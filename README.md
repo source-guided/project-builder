@@ -9,7 +9,7 @@
 Codex CLI의 플러그인 기능이 필요합니다. 로컬 설치 검증 버전은 **0.153.4**입니다.
 
 ```sh
-codex plugin marketplace add tkddu1591/product-builder --ref v0.2.0
+codex plugin marketplace add tkddu1591/product-builder --ref v0.3.0
 codex plugin add product-builder@tkddu1591-tools
 ```
 
@@ -55,6 +55,8 @@ codex plugin list --marketplace tkddu1591-tools --json
 
 - 화면 구성 전에 누가 무엇을 완료하려는지 정의합니다.
 - 각 정보와 조작을 사용자 판단·행동에 연결합니다.
+- 역할별 실제 진입 경로에서 원하는 항목을 찾고 행동하는 과정을 확인합니다. 선택 조건·결과·상세가 같은 대상을 가리켜야 합니다.
+- 선택 메뉴와 보조 패널은 열린 상태, 키보드 조작, 닫은 뒤 입력·위치·초점 복원까지 확인합니다.
 - 필요성이 없는 통계 카드, 배너, 필터, 개발 설명을 관성적으로 추가하지 않습니다.
 - 필요한 오류·접근성 안내·결과의 유효성과 영향을 유지합니다.
 - 실제 렌더링과 사용자 흐름으로 확인하고, 미확인 화면은 검증 완료로 보고하지 않습니다.
@@ -64,6 +66,8 @@ codex plugin list --marketplace tkddu1591-tools --json
 [UI 참조](plugins/product-builder/references/design/ui/index.json)의 `example`과 캡처 참조로 실행 가능한 공통 문서 검토 예제를 찾습니다. 이 예제는 합성 콘텐츠를 사용하는 화면 흐름 참고 자료이며, 상태는 현재 페이지에서만 유지됩니다.
 
 [UX 참조](plugins/product-builder/references/design/ux/index.json)의 `interactions`와 `feedback-actions`는 편집 방식·행동 영역·알림 범위와 수명에 대한 원천으로 연결합니다. 레이아웃 이동을 가리기 위해 팝업을 기본값으로 선택하지 않습니다.
+
+같은 참조의 `task-navigation`은 역할별 정보 우선순위, 선택 맥락, 선택 컨트롤과 보조 화면의 적용 기준을 다룹니다. 네이티브 컨트롤이나 펼침을 일괄 금지하지 않고 사용자 선호와 과업에 맞게 선택합니다.
 
 [UI 참조](plugins/product-builder/references/design/ui/index.json)와 [UX 참조](plugins/product-builder/references/design/ux/index.json)는 Carbon, Atlassian, Fluent, GOV.UK, NN/g, Linear, Notion, WAI와 web.dev의 여러 접근법을 연결합니다. [Figma 참조](plugins/product-builder/references/design/figma/index.json)도 별도로 둡니다. 관련 원천을 비교하고 사용자 선호를 적용하며, 한 제품의 스타일을 모든 작업에 강제하지 않습니다.
 

@@ -11,6 +11,8 @@ For each mandatory outcome, choose the smallest meaningful check. Consider:
 - Duplicate requests, conflicting edits, partial failure where relevant.
 - Restart persistence, export schema, run/deployment artifacts if required.
 - Role/permission behavior and rendered UX for affected paths.
+- Each primary role's entry-to-outcome path and a concrete find-and-act task from visible UI. Check current scope, selected item, and detail/action identity after filtering; do not substitute the administrator view for other roles. Use UX reference `task-navigation` where relevant.
+- Open controls and secondary surfaces: selection/commit/cancel keyboard paths, viewport-edge clipping, close/reopen draft preservation, main-page anchors, scrollbar width, and return focus.
 - Interaction transitions: expected stable controls, scroll, and focus across editing, cancellation, errors, and loading. Distinguish intended expansion from incidental layout jumps; load-only metrics are insufficient.
 - Feedback lifecycle and scope: completion/cancel events do not remain as unrelated page state; contextual messages belong to the current item; temporary messages clear as designed while actionable errors remain recoverable. Check actual action-region correspondence, not only stable siblings. Use UX reference `feedback-actions` for the decision method.
 

@@ -204,6 +204,75 @@
         "editing",
         "actions"
       ]
+    },
+    {
+      "id": "carbon-dropdown",
+      "label": "Carbon 선택 컨트롤",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.carbondesignsystem.com/building-blocks/core/components/dropdown/guidelines",
+      "topics": [
+        "select",
+        "dropdown"
+      ]
+    },
+    {
+      "id": "wai-combobox",
+      "label": "WAI-ARIA 콤보박스 패턴",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.w3.org/WAI/ARIA/apg/patterns/combobox/",
+      "topics": [
+        "selection",
+        "keyboard"
+      ]
+    },
+    {
+      "id": "gov-accordion",
+      "label": "GOV.UK 접힘 콘텐츠 선택 기준",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://design-system.service.gov.uk/components/accordion/",
+      "topics": [
+        "disclosure",
+        "hierarchy"
+      ]
+    },
+    {
+      "id": "google-transit",
+      "label": "Google Maps 운행편 탐색 흐름",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://support.google.com/maps/answer/6142130?hl=en",
+      "topics": [
+        "wayfinding",
+        "journey",
+        "context"
+      ]
+    },
+    {
+      "id": "task-navigation",
+      "label": "사용자 과업과 선택 맥락",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../../skills/product-ux/sources/task-navigation.md",
+      "topics": [
+        "roles",
+        "wayfinding",
+        "controls",
+        "disclosure"
+      ]
+    },
+    {
+      "id": "wai-selectonly",
+      "label": "WAI 선택형 콤보박스 동작 예제",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/",
+      "topics": [
+        "keyboard",
+        "select-only"
+      ]
     }
   ]
 }

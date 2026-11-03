@@ -10,6 +10,8 @@ The decision depends on the task. A layout shift does not automatically justify 
 
 An adjacent panel is another option when the task needs both context and editing space, but narrow screens and keyboard navigation must be designed explicitly. No pattern is automatically better because it looks tidy in one screenshot.
 
+For expandable lists/forms, control menus, or competing result/detail views, use UX reference `task-navigation`. Intentional disclosure is not automatically a defect; choose a different surface when its expansion disrupts the primary task. Include open/close and return-state geometry in the transition checks below.
+
 ## Preserve useful spatial continuity
 
 For action placement and feedback lifetime, continue through the UX reference ID `feedback-actions`. Choose these as part of the mode transition before comparing rectangles.
