@@ -10,6 +10,14 @@ The decision depends on the task. A layout shift does not automatically justify 
 
 An adjacent panel is another option when the task needs both context and editing space, but narrow screens and keyboard navigation must be designed explicitly. No pattern is automatically better because it looks tidy in one screenshot.
 
+## Decide the journey before the surface
+
+For substantial input work, establish what the user already knows or possesses, what they must prepare, which decisions depend on earlier answers, when validation becomes useful, and which action actually commits a result. Compare a grouped form, sequential flow, and independently revisitable tasks only where each is plausible. Choose from familiarity, repetition, dependencies, error recovery, and the need to compare information together. Do not choose by field count, a familiar brand, or the backend's entity structure alone.
+
+A first-time user should be able to identify the purpose, required preparation, starting action, and completion consequence from the product itself. Test without prefilled demo success, code knowledge, or coaching. A returning user may need a direct route to a local change instead of repeating onboarding. Preserve input when going back, revising an earlier choice, or returning after a recoverable failure; invalidate dependent results explicitly when appropriate.
+
+Resolve UX references `gov-questions` and `visa-wizard` for applicable evidence. Their recommendations differ, including how progress navigation is presented; neither is a universal layout specification. Use the task's circumstances to explain what transfers and what does not. Keep concrete page counts, step names, and input formats in the consuming project.
+
 For expandable lists/forms, control menus, or competing result/detail views, use UX reference `task-navigation`. Intentional disclosure is not automatically a defect; choose a different surface when its expansion disrupts the primary task. Include open/close and return-state geometry in the transition checks below.
 
 ## Preserve useful spatial continuity
@@ -24,6 +32,8 @@ For mode changes such as read → edit → cancel/error/save:
 - Keep long and translated content accessible. A fixed frame must support scrolling or another explicit expansion path; do not hide overflow merely to make a test pass. Check text enlargement and keyboard behavior.
 - Distinguish intentional expansion, navigation, and newly saved content from incidental movement that makes users lose their place. Focus should move to the relevant control and return meaningfully; do not suppress necessary focus visibility to preserve scroll numerically.
 - Verify that the focused input is actually visible in the viewport during keyboard entry, error recovery, and return from another surface. Do not apply `preventScroll` indiscriminately. If the target is outside the viewport, a minimal intentional scroll is appropriate. Compare document coordinates separately from viewport coordinates so intentional scrolling is not confused with layout movement.
+
+Include transitions caused by data, not just explicit editing modes. Hold the task and viewport constant while selecting records or scopes that make contextual help, warnings, status, or descriptions appear, wrap, and disappear. Compare both directions and the region containing the changing content. An unchanged page width or a single final screenshot cannot establish continuity. Derive the expected stable anchors from the task; do not reserve arbitrary empty space or suppress necessary information merely to pass a geometry check.
 
 Do not use CLS alone as the acceptance criterion for an interaction. Shifts shortly after discrete input can be excluded from that metric even when an edit button pushes another action away. Test the user's actual transition in addition to load metrics.
 

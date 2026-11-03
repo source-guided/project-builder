@@ -12,6 +12,13 @@
   "references/governance/index.json",
   "references/index.json",
   "references/version/index.json",
+  "scripts/reference_address.py",
+  "scripts/reference_catalog.py",
+  "scripts/reference_http.py",
+  "scripts/reference_io.py",
+  "scripts/reference_registry.py",
+  "scripts/reference_session.py",
+  "scripts/reference_workflow.py",
   "scripts/references.py",
   "skills/brief/SKILL.md",
   "skills/brief/agents/openai.yaml",
@@ -41,6 +48,7 @@
   "skills/verification/SKILL.md",
   "skills/verification/agents/openai.yaml",
   "skills/verification/sources/evidence.md",
+  "skills/verification/sources/independent-review.md",
   "skills/verification/sources/workflow.md",
   "sources/governance/reference-routing.md"
 ]

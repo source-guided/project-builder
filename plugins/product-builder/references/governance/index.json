@@ -10,8 +10,12 @@
       "topics": [
         "required",
         "harness",
-        "routing"
-      ]
+        "routing",
+        "discovery",
+        "session",
+        "metadata maintenance"
+      ],
+      "description": "원천을 참조로 발견하고 세션에서 조회·재사용하며 메타데이터를 관리하는 실행 원칙"
     }
   ]
 }

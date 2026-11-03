@@ -5,6 +5,7 @@ import json
 import re
 import subprocess
 import importlib.util
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -82,17 +83,25 @@ def validate(root: Path = ROOT):
             assert target.exists(), f"Broken link in {path.name}: {link}"
             if is_source:
                 assert target.is_relative_to((plugin / "references").resolve()), f"Source-to-source link must return through a reference: {path.name}"
-    spec = importlib.util.spec_from_file_location("package_reference_routes", plugin / "scripts/references.py")
-    routes = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(routes)
-    indexes = routes.walk_references(plugin / "references/index.json")
+    sys.path.insert(0, str(plugin / "scripts"))
+    def load_module(name, filename):
+        spec = importlib.util.spec_from_file_location(name, plugin / "scripts" / filename)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    catalog_module = load_module("package_reference_catalog", "reference_catalog.py")
+    io_module = load_module("package_reference_io", "reference_io.py")
+    address_module = load_module("package_reference_address", "reference_address.py")
+    graph = catalog_module.Catalog(io_module.load_index).walk([plugin / "references/index.json"])
+    assert graph["complete"], f"Incomplete package reference graph: {graph['errors']} {graph['pending']}"
+    indexes = graph["indexes"]
     assert indexes, "Missing reference graph"
     for index in indexes:
         current = Path(index["index"])
         assert current.is_relative_to((plugin / "references").resolve()), "Public references cannot bind a consumer registry"
         for entry in index["entries"]:
             if entry["access"] == "file":
-                target = (current.parent / entry["locator"]).resolve()
+                target = address_module.local_path(address_module.source_address(current, entry["locator"], "file"))
                 assert target.is_relative_to(plugin.resolve()) and target.is_file(), f"Invalid source location: {entry['id']}"
     if (root / ".git").exists():
         tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().split("\0")

@@ -1,4 +1,4 @@
 interface:
   display_name: "Product Builder"
-  short_description: "Develop and resume products from brief to verified handoff"
+  short_description: "Find sources and connect ongoing product work"
   default_prompt: "Use $start for the current product task."

@@ -15,6 +15,10 @@ Produce a compact flow and low-fidelity layout proportional to the change. For e
 - Is it primary, contextual detail, or unnecessary in this view?
 - Which requirement, source, or explicit design decision justifies it?
 
+For a substantial flow, connect the task model to one or more material decisions in the existing work record: task condition → applicable source and its limits → plausible alternatives → chosen tradeoff → observable check. This is a short reasoning record, not a required design document or approval gate. A source-read receipt is not evidence that its guidance was applied. Before implementation, try to disprove the chosen flow with a realistic competing task or state. Reconsider it when the user cannot reach a required outcome; do not patch the explanation around an unsuitable structure.
+
+Distinguish first use, repeated use, and a change of context when they affect the task. For unfamiliar input or dependent decisions, resolve UX reference `interactions` and its journey guidance before laying out fields. Neither the API schema nor the presence of a demo dataset defines the user's workflow. Keep the user's task vocabulary and the state that makes the next action meaningful.
+
 Use this to select information, not to generate more product copy. Do not automatically add overview cards, charts, banners, filters, navigation, AI explanations, or “coming soon” panels. A metric belongs when someone makes a relevant decision with it. Technical provenance can belong when needed to judge freshness or validity; debug logs and implementation status usually belong in development records.
 
 Do not minimize blindly. Keep accessibility instructions, meaningful errors, essential context, required disclosures, and decision consequences. A primary action is a useful default, not an arbitrary one-button limit. Avoid hiding important actions behind generic menus solely to reduce visible controls.

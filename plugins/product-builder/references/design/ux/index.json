@@ -273,6 +273,18 @@
         "keyboard",
         "select-only"
       ]
+    },
+    {
+      "id": "visa-wizard",
+      "label": "Visa 다단계 작업의 적용과 한계",
+      "kind": "source",
+      "access": "web",
+      "locator": "https://design.visa.com/patterns/wizard/usage/",
+      "topics": [
+        "journey",
+        "forms",
+        "complexity"
+      ]
     }
   ]
 }

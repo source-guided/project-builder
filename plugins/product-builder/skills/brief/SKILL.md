@@ -12,7 +12,7 @@ Then select `delivery` / `brief` through the reference graph to find this capabi
 The package root is two directories above this skill folder. Bootstrap the mandatory source using the packaged helper:
 
 ```sh
-python3 <plugin-root>/scripts/references.py read --index <plugin-root>/references/governance/index.json --id routing-policy --trace <project>/.local/product-builder/source-trace.jsonl
+python3 <plugin-root>/scripts/references.py read --index <plugin-root>/references/governance/index.json --id routing-policy --trace <project>/.local/product-builder/session-v2.jsonl
 ```
 
-Use `list` for metadata; use `resolve` → appropriate reader → `record` for each source, or `read` for text files. Find the project initializer through the delivery reference if a consumer registry is missing. Follow the selected source workflow, then audit the recorded traversal.
+Use `discover` / `resolve` for stateless metadata lookup. For source access use `prepare-read` → appropriate reader → `record`, or `read` for local text; `read-many` supports independent local reads. The governance source owns session, maintenance, and audit details. Find the project initializer through the delivery reference if a consumer registry is missing, then follow the selected workflow.

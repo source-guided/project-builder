@@ -9,12 +9,15 @@
       "locator": "../../skills/start/sources/workflow.md",
       "topics": [
         "start",
-        "resume"
+        "resume",
+        "source discovery",
+        "ongoing work"
       ],
       "related_references": [
         "../design/index.json",
         "../frontend/index.json"
-      ]
+      ],
+      "description": "진행 중·재개한 작업에서 관련 원천을 계속 찾고 필요한 기본 스킬 연결"
     },
     {
       "id": "brief",
@@ -24,8 +27,10 @@
       "locator": "../../skills/brief/sources/workflow.md",
       "topics": [
         "brief",
-        "requirements"
-      ]
+        "requirements",
+        "contract"
+      ],
+      "description": "요구사항·인수 조건과 적용할 계약 원천의 탐색"
     },
     {
       "id": "implementation",
@@ -34,8 +39,11 @@
       "access": "file",
       "locator": "../../skills/implementation/sources/workflow.md",
       "topics": [
-        "implementation"
-      ]
+        "implementation",
+        "boundary",
+        "compatibility"
+      ],
+      "description": "계약과 라이브러리·실행 환경의 차이를 조정하는 과업 단위 구현"
     },
     {
       "id": "verification",
@@ -45,8 +53,10 @@
       "locator": "../../skills/verification/sources/workflow.md",
       "topics": [
         "verification",
-        "testing"
-      ]
+        "testing",
+        "contract boundaries"
+      ],
+      "description": "요구 결과와 계약 경계·환경 차이를 실제 증거로 검증"
     },
     {
       "id": "source-evaluation",
@@ -66,8 +76,13 @@
       "access": "file",
       "locator": "../../skills/brief/sources/constraints.md",
       "topics": [
-        "constraints"
-      ]
+        "constraints",
+        "format",
+        "standards",
+        "bounds",
+        "environment"
+      ],
+      "description": "명시 조건, 적용 표준·프로파일, 입력 범위와 미확정 제약의 구분"
     },
     {
       "id": "examples",
@@ -109,6 +124,21 @@
         "setup",
         "project"
       ]
+    },
+    {
+      "id": "independent-review",
+      "label": "최초 산출물 독립 검토와 증거 귀속",
+      "kind": "source",
+      "access": "file",
+      "locator": "../../skills/verification/sources/independent-review.md",
+      "topics": [
+        "independent review",
+        "evaluation",
+        "evidence",
+        "provenance",
+        "applicability"
+      ],
+      "description": "최초 산출물의 독립 실행 검토, 규칙 적용 근거와 조건부 판단 구분"
     }
   ]
 }

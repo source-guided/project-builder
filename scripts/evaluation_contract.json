@@ -1,0 +1,36 @@
+{
+  "format": 2,
+  "purpose": "A review report and its evidence ownership contract. It does not define product-specific acceptance criteria.",
+  "report": {
+    "format": 2,
+    "checks": [
+      {
+        "id": "unique-check-id",
+        "source": {"kind": "input or package", "path": "relative source path", "locator": "source section or line"},
+        "outcome": "The sourced outcome being checked",
+        "status": "observed, finding, unverified, or not_applicable",
+        "method": "runtime, inspection, or scope",
+        "explanation": "Actual observation and its limits",
+        "steps": ["Actual reproduction steps; required for observed/finding"],
+        "evidence": [{"path": "evidence/relative-file", "note": "What this file supports"}],
+        "execution_id": "Required for runtime observed/finding; returned by evaluation_execution.py"
+      }
+    ],
+    "scope_limits": ["Coverage limits; may be an empty array"]
+  },
+  "rules": [
+    "input sources belong to preserved user input; package sources belong to the frozen workflow package",
+    "observed/finding requires actual steps and nonempty local evidence",
+    "runtime observed/finding requires captured execution evidence tied to the first artifact",
+    "additional evidence paths must not exist before execution; every run preserves its own new outputs",
+    "standalone file arguments are tracked relative to runtime/; declare indirect dependencies using --test-input with review-relative paths",
+    "implementation, review and capture share POSIX process-group cleanup before snapshots and evidence hashing; detached sessions and non-POSIX execution are unsupported",
+    "inspection supports static claims only; it does not establish runtime behavior",
+    "scope is used for unverified/not_applicable explanations, not observations",
+    "a timed-out execution can support a finding about that execution, not a completed outcome",
+    "runtime source files stay unchanged, including additions; configure generated results and mutable state outside runtime/",
+    "application file bytes and executable permissions are compared; dependency and interpreter exclusions remain explicit limitations",
+    "execution records live in the writable review workspace and are tool-owned by workflow convention, not OS identity; this is not a tamper-proof attestation",
+    "structure and revision checks do not prove evidence truth, full coverage, usability, or product acceptance"
+  ]
+}

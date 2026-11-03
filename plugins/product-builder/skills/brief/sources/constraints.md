@@ -21,4 +21,8 @@ These are coverage questions, not requirements to add to every product. Do not i
 
 For each mandatory condition, identify an observable check. For each missing material clause, identify the minimum source or stakeholder decision needed. Choose bounded assumptions only where authorized and record them. Do not label a reconstructed ledger “complete original specification.”
 
+When a contract names a format or standard, identify the adopted version/profile and explicit product restrictions through their sources. Distinguish a named normative contract from a familiar format label with multiple dialects. A library's accepted values, defaults, and normalization are implementation observations, not the contract. Record material gaps between the required input domain and the selected environment's supported domain, including bounds, precision, and representation where relevant.
+
+An absent maximum does not establish unlimited resource requirements, and a runtime's default ceiling does not establish a product limit. Look for supplied operational scope and owner policy before choosing a bound. Keep an unresolved material limit or interpretation visible; ask only when that missing decision actually blocks the required outcome. A declared implementation limitation cannot silently narrow a mandatory requirement.
+
 After implementation, reconcile the ledger against actual behavior and evidence. Unimplemented requirements remain visible; optional proposals must not displace them.

@@ -1,52 +1,78 @@
-# 참조를 경유하는 원천 탐색
+# 발견·원천·세션의 책임
 
-이 문서는 구조 안내이며 governance 참조가 가리키는 원칙 원천을 대체하지 않습니다.
+이 문서는 구현 구조와 사용 방법입니다. 관리 원칙은 [governance 참조](../plugins/product-builder/references/governance/index.json)가 가리키는 원천이 소유합니다.
 
-사용자는 “프론트 프로젝트를 구현해줘”처럼 의도를 말합니다. 모델은 참조 메타데이터의 주제와 연결 관계를 보고 필요한 디자인·UX·프론트·프로젝트 영역을 선택합니다. 정해진 순서로 모든 원천을 읽는 구조가 아닙니다.
+## 책임과 실제 모듈
 
-## 절대 원칙의 소유 위치
+| 계층 | 책임 | 구현 |
+| --- | --- | --- |
+| 발견·주소 해석 | 메타데이터 검증, 다중 색인 탐색, 검색 단서 매칭, 주소 해석 | `reference_catalog.py` |
+| 주소 계약 | 로컬 경로·파일 URI·웹·커넥터 주소의 공통 해석 | `reference_address.py` |
+| 원천 접근 어댑터 | 로컬 파일 또는 명시한 HTTP 색인 읽기, 기존 접근 제한 유지 | `reference_io.py`, `reference_http.py` |
+| 참조 관리 | 발견용 메타데이터 추가·수정·삭제, 충돌 방지 | `reference_registry.py` |
+| 진입점 세션 | 참조 영수증, 관측, 참조 캐시, 검토 기록, 접근 맥락 분리 | `reference_session.py` |
+| Product Builder 실행 정책 | 원칙 원천 초기화, 읽기 조합, 제한된 병렬 실행 | `reference_workflow.py` |
+| 명령 진입점 | 입력과 출력의 연결 | `references.py` |
+| 전문 원천·AI | 과업별 기준, 근거 대조, 판단과 완료 조건 | 각 스킬의 소유 원천 |
 
-먼저 [공통 참조 색인](../plugins/product-builder/references/index.json)의 governance 참조를 따라 원천을 읽습니다. 원칙 본문은 별도 소유 원천에 있고, 진입 지침과 다른 스킬에 복제하지 않습니다. 일반 개선이나 최적화로 이 원칙을 완화하지 않습니다.
+발견 모듈은 세션이나 Product Builder 초기화 규칙을 알지 못합니다. `Catalog`는 색인 reader를 주입받습니다. 기본 CLI는 파일 및 명시한 HTTP origin의 JSON 색인을 지원하고, 다른 연결 방식은 호스트의 어댑터가 담당합니다. 커넥터 식별자는 불투명한 값 그대로 전달하며 파일 경로로 바꾸지 않습니다. 커넥터 색인을 읽을 호스트 어댑터가 없으면 그 분기만 조회 불가로 반환합니다. 업무 시스템의 검색·인증을 새로 구현한 것은 아닙니다.
 
-```text
-요청 → 참조 → 원천 A → 참조 → 원천 B → 참조 → 원천 C
+## 참조 데이터
+
+참조는 식별자, 위치, 표시명, 선택적 description, 주제, 접근 방법과 다음 참조를 담습니다. description은 원천을 찾기 위한 짧은 설명입니다. 정책 값·규칙 본문·판단 결과·권위 있는 버전 값을 넣지 않습니다. 버전과 소유 정보는 각각의 실제 원천에서 확인합니다.
+
+관련도는 현재 구현에서 메타데이터에 일치한 검색어 목록입니다. 확률·신뢰도·정책 우선순위가 아닙니다. 모델이나 검색 공급자가 다른 관련성 표현을 제공할 수 있지만 원천의 권위를 결정하지 않습니다.
+
+공통 참조에는 재사용 가능한 원천의 위치만, 프로젝트별 참조에는 해당 프로젝트의 실제 기획·계약·디자인·코드 위치를 둡니다. 동일 원천을 여러 참조가 가리킬 수 있으며, 탐색 상태를 중앙 조직 메모리로 합치지 않습니다.
+
+## 발견과 원천 읽기
+
+```sh
+python3 plugins/product-builder/scripts/references.py discover \
+  --index plugins/product-builder/references/index.json \
+  --query 'keyboard selection'
+python3 plugins/product-builder/scripts/references.py resolve \
+  --index plugins/product-builder/references/design/ux/index.json --id task-navigation
 ```
 
-원천 A에서 B의 링크를 발견해도 바로 이동하지 않습니다. 기존 참조를 찾거나 확인한 위치를 소비 프로젝트의 참조에 등록한 뒤 읽습니다. 수평 이동도 같은 규칙을 따릅니다. 이미 확인한 경로와 순환을 추적해 불필요한 탐색을 멈춥니다.
+이 명령들은 세션 없이 메타데이터를 반환하며 본문을 읽지 않습니다. 파일 색인 여러 개 또는 HTTP 색인 주소 여러 개를 root로 줄 수 있습니다. 로컬 색인은 명시한 root의 디렉터리 트리 안에서, HTTP 색인은 명시한 origin 안에서 탐색합니다. HTTP 링크만으로 로컬 파일 읽기 범위를 얻을 수 없습니다. 다른 경계의 색인은 새 root로 명시해야 합니다. 인증 실패를 우회하지 않습니다. 허용된 리다이렉트 이후 상대 참조는 최종 색인 주소를 기준으로 해석합니다. 잘못된 root와 전송 중단을 포함한 개별 색인 오류는 다른 정상 분기를 중단하지 않습니다.
 
-## 참조는 탐색 메타데이터만
+발견 결과에는 정상 후보, 실패한 분기, 탐색 한도로 남은 분기가 구분됩니다. 원천 후보가 없다는 사실과 탐색을 완료하지 못했다는 사실은 다릅니다. 패키지 검증은 별도로 모든 내부 참조의 유효성을 요구합니다.
 
-참조 항목은 ID, 표시명, 주제, 대상 종류, 위치, 접근 방법, 관련 참조만 담습니다. 실제 규칙·요구사항·본문을 저장하지 않습니다. 버전과 소유 정보도 값으로 복제하지 않고, 버전 영역의 참조를 통해 실제 manifest·release·ownership 문서를 읽습니다.
-
-```text
-공개 플러그인
-  references/
-    governance/       → 참조 탐색 원칙 원천
-    version/          → 실제 패키지·배포 정보 원천
-    design/
-      ui/             → UI 선택·보기 방식 원천
-      ux/             → 상호작용·접근성·사용성 원천
-      figma/          → 도구·디자인 연결 원천
-    frontend/
-      conventions/    → 범용 구현 절차 원천
-    delivery/         → 요구 분석·구현·검증·재개 원천
-
-소비 프로젝트의 로컬 참조
-  references/
-    version/          → 해당 프로젝트의 실제 버전·소유 문서
-    project/
-      brief/          → 실제 지시문·입력 데이터
-      frontend/
-        conventions/  → 프로젝트 컨벤션
-        design/       → 프로젝트 디자인
-        api/          → 프로젝트 API 계약
-        implementation/ → 프로젝트 코드
+```sh
+python3 plugins/product-builder/scripts/references.py read \
+  --index plugins/product-builder/references/governance/index.json --id routing-policy \
+  --trace .local/product-builder/session.jsonl --scope workspace-account
+python3 plugins/product-builder/scripts/references.py prepare-read \
+  --index plugins/product-builder/references/design/ux/index.json --id wai-combobox \
+  --trace .local/product-builder/session.jsonl --scope workspace-account
+# 반환된 address를 허용된 도구로 읽은 뒤 해당 receipt를 기록한다.
+python3 plugins/product-builder/scripts/references.py record \
+  --trace .local/product-builder/session.jsonl --scope workspace-account --receipt RECEIPT
 ```
 
-프로젝트별 바인딩은 공통 플러그인에 배포하지 않습니다. 기본 초기화 위치는 사용하는 저장소의 `.local/product-builder/references/`입니다. 기존 프로젝트 원천을 중앙 문서로 합치지 않고 주소만 등록합니다.
+로컬 텍스트는 `read`, 독립적인 여러 로컬 텍스트는 `read-many --requests <index/id 배열 JSON> --workers 4`로 읽습니다. 외부 도구는 여러 `prepare-read` 후 독립 조회를 병렬 실행하고 각 receipt로 완료를 기록할 수 있습니다. 완료 순서는 자유롭지만 미발급·중복 영수증은 거부합니다. 실패도 해당 영수증의 관측으로 남겨 다른 결과를 보존합니다.
 
-## 실행과 검증
+HTTP 또는 커넥터 색인이 로컬 파일 본문을 가리키는 경우에도 그 링크가 읽기 권한을 부여하지 않습니다. 로컬 자료를 읽으려는 호출자가 `--source-root <허용한 로컬 디렉터리>`를 명시해야 합니다. 이 범위는 호출마다 확인하며 이전 성공이나 참조 캐시로 권한을 물려받지 않습니다. 사용자가 선택한 로컬 색인의 파일 바인딩은 기존 로컬 파일 접근 권한 안에서 읽습니다.
 
-패키지의 `scripts/references.py`는 메타데이터 조회, 주소 해석, 읽기 영수증, 경로 검증을 제공합니다. 텍스트 파일은 `read`가 참조 조회와 원천 읽기를 함께 수행하되 trace에는 서로 다른 두 이벤트로 기록합니다. 웹·연결 도구는 `resolve` → 실제 도구 → `record` 순서입니다. `audit`는 참조 없이 연속된 원천 접근, 재사용한 영수증, 최초 원칙 원천 누락을 거부합니다.
+## 세션과 재사용
 
-trace에는 본문을 저장하지 않습니다. 경로 검증은 기록된 접근의 검사이며 모든 외부 도구를 차단하는 보안 샌드박스는 아닙니다. 새 에이전트 평가에서는 실제 도구 사용도 함께 확인합니다.
+각 진입점은 자신의 trace와 `--scope`를 선택합니다. scope가 바뀐 trace를 재사용할 수 없습니다. 이 값은 상태를 구분하는 호출자 선언이며 인증이나 권한 부여 수단이 아닙니다.
+
+세션은 발견 메타데이터만 캐시하고 로컬 색인의 변경을 감지해 무효화합니다. HTTP 색인의 응답 캐시는 아직 구현하지 않았습니다. 이전 본문을 현재 AI 컨텍스트에서 사용할 때는 기존 실제 읽기의 receipt에 연결한 `reused-from-current-context`로 기록할 수 있습니다. 이것을 최신 원천 조회로 세지 않습니다. 현재 상태가 필요하면 원천을 다시 읽습니다.
+
+캐시에는 원래 locator를 포함한 발견 메타데이터를 보존합니다. 본문 조회를 준비할 때 현재 주소를 다시 해석하므로, 색인은 그대로여도 심볼릭 링크가 다른 원천을 가리키거나 끊어지면 현재 연결을 사용합니다. 발견·조회·등록·수정은 같은 주소 계약을 사용하며 공백이나 한글이 인코딩된 파일 URI도 동일하게 처리합니다.
+
+trace는 본문 없이 참조·관측·메타데이터 검토 기록을 남깁니다. 동시 기록은 같은 사용자 범위의 프로세스 잠금으로 보호합니다. 일반 세션 감사와 Product Builder의 현재 원칙 원천 확인은 별개 결과입니다. 원칙이 바뀌면 해당 새 원천을 다시 읽어야 합니다.
+
+## 관리 절차
+
+`list`가 반환한 `index_digest`를 보존하고, `update --patch <메타데이터 JSON> --expected-digest <값>` 또는 `remove --expected-digest <값>`에 사용합니다. 중간 변경이 있으면 다시 확인하도록 거부하므로 동료의 변경을 덮어쓰지 않습니다. 주소 이동은 확인된 새 locator로 갱신하고, 삭제는 명시적인 관리 작업으로 처리합니다.
+
+원천 변경 뒤에는 `metadata-status --refresh`로 관측을 갱신합니다. 관리자가 description·주제·주소의 적절성을 판단하고 필요한 메타데이터를 바꾼 뒤 `metadata-review --receipt <실제 읽기 영수증>`으로 확인을 기록합니다. 검토한 원천 리비전 또는 참조 바인딩이 달라지면 다시 검토가 필요합니다. 이 확인 정보는 관리 세션에 남고 참조 항목의 정책 값으로 들어가지 않습니다. 원격 원천의 상시 감시나 자동 의미 동기화를 제공한다는 뜻은 아닙니다.
+
+## 한계와 호환성
+
+v2 trace는 독립 영수증과 세션 scope를 사용합니다. 과거 trace·검토 보고서는 당시의 동결 패키지와 하네스로 읽습니다. 새로운 형식으로 조용히 재해석하지 않습니다.
+
+현재는 파일·HTTP 메타데이터 원천을 연결하는 발견 구현과 로컬 세션 실행입니다. 원격 원천의 의미를 판단하거나 조직 전체 검색 인덱스를 운영하지 않습니다. 실제 연결 서비스의 인증, rate limit과 배포는 호스트·원천 어댑터의 책임입니다. trace와 실행 영수증은 재현 근거이며 모든 도구를 강제하는 보안 샌드박스나 증거의 진실성 보증은 아닙니다.
