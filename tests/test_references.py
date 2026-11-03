@@ -56,7 +56,7 @@ class ReferenceRoutingTest(unittest.TestCase):
             root = Path(temp)
             shutil.copytree(PLUGIN, root / "plugins/project-builder",ignore=shutil.ignore_patterns("__pycache__","*.pyc"))
             shutil.copytree(ROOT / ".agents", root / ".agents")
-            (root / ".gitignore").write_text(".local/\n")
+            (root / ".gitignore").write_text(".local/\n__pycache__/\n*.pyc\n")
             approved = [p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file()]
             approved.append("publication-files.json")
             (root / "publication-files.json").write_text(json.dumps(approved))
