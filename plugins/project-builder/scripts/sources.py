@@ -28,7 +28,7 @@ def main():
             command.add_argument("--source-root",type=Path,action="append",default=[])
         if name in {"read","prepare-read"}:
             command.add_argument("--reference-index");command.add_argument("--reference-access",choices=("file","web","connector"));
-            command.add_argument("--id");command.add_argument("--trace",type=Path,required=True);command.add_argument("--scope",default="local")
+            command.add_argument("--id");command.add_argument("--trace",required=True);command.add_argument("--scope")
             command.add_argument("--source-root",type=Path,action="append",default=[])
     args=parser.parse_args()
     if args.command=="offers":result={"candidates":offers(args.query,catalog=args.catalog),"connected":False,"bodies_fetched":False}

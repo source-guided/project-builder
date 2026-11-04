@@ -17,17 +17,17 @@ BOOTSTRAP = "project-builder:routing-bootstrap"
 
 
 class Workflow:
-    def __init__(self, trace, *, scope="local", catalog=None, index_fingerprint=fingerprint, source_roots=()):
-        self.session = Session(trace, scope=scope)
+    def __init__(self, trace, *, scope=None, catalog=None, index_fingerprint=fingerprint, source_roots=(), stores=None):
+        self.session = Session(trace, scope=scope, stores=stores)
         self.catalog = catalog or Catalog(load_index)
         self.index_fingerprint = index_fingerprint
         self.source_roots = [Path(root).resolve() for root in source_roots]
         if not all(root.is_dir() for root in self.source_roots):
             raise ValueError("Explicit source roots must be existing directories")
 
-    def _policy_read(self):
+    def _policy_read(self, records=None):
         expected = hashlib.sha256(POLICY.read_bytes()).hexdigest()
-        records = self.session.events()
+        records = self.session.events() if records is None else records
         starts = {e["receipt"] for e in records if e.get("event") == "reference" and e.get("purpose") == BOOTSTRAP}
         return any(e.get("event") == "source" and e["receipt"] in starts and e["status"] == "read" and e.get("observed_sha256") == expected for e in records)
 
@@ -38,14 +38,15 @@ class Workflow:
         cached = self.session.cached_metadata(normalized, identifier, signature, access=method)
         resolved = self.catalog.bind(**cached) if cached else self.catalog.resolve(normalized, identifier, access=method)
         is_policy = resolved["access"] == "file" and local_path(resolved["address"]) == POLICY.resolve()
-        if not is_policy and not self._policy_read():
-            raise ValueError("Read the current governing routing source through its reference first")
+        def validate_context(records):
+            if not is_policy and not self._policy_read(records):
+                raise ValueError("Read the current governing routing source through its reference first")
         if resolved["access"] == "file" and resolved["reference"]["access"] != "file":
             target=local_path(resolved["address"])
             if not any(target.is_relative_to(root) for root in self.source_roots):
                 raise PermissionError("A remote or connector index cannot authorize a local source read; explicitly supply its source root")
         return self.session.prepare(resolved, index_signature=signature, cache_hit=cached is not None,
-                                    purpose=BOOTSTRAP if is_policy else None)
+                                    purpose=BOOTSTRAP if is_policy else None, validate_context=validate_context)
 
     def read(self, index, identifier, *, access=None):
         request = self.prepare(index, identifier, access=access)

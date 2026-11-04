@@ -105,17 +105,26 @@ $project-builder:start
 
 ## 참조를 어디에 둘 수 있나요?
 
-**참조 목록 자체와 프로젝트의 원천 선택 상태도 원하는 저장소에 둘 수 있습니다.** `.local/`은 로컬 보관 예시이며 필수 위치가 아닙니다.
+**참조 목록, 프로젝트의 원천 선택 상태, 조회 영수증을 각각 원하는 저장소에 둘 수 있습니다.** `.local/`은 로컬 보관 예시이며 필수 위치가 아닙니다.
 
 - 개인용: 본인만 접근하는 파일·SQLite·비공개 저장소·클라우드 문서
 - 팀용: 팀이 접근하는 GitHub 저장소·Supabase DB·S3 버킷·Confluence 페이지 등
 - 다른 서비스: 조건부 변경을 지원하는 HTTP 저장소 또는 호스트가 제공하는 어댑터
 
-파일 경로는 그대로 사용하고, 설정한 저장소는 `store://team/references`처럼 연결합니다. 프로젝트의 선택 상태도 `store://team/project-a`처럼 원격에 둘 수 있으며 로컬 JSON 복사본을 필수로 만들지 않습니다. 저장소 프로필은 연결 정보만 담고 인증정보는 각 사용자의 실행 환경에서 제공합니다.
+파일 경로는 그대로 사용하고, 설정한 저장소는 `store://team/references`처럼 연결합니다. 프로젝트의 선택 상태는 `store://team/project-a`, 조회 영수증은 `store://team/receipts/alice/run-001`처럼 서로 다른 문서에 둘 수 있으며 로컬 복사본을 필수로 만들지 않습니다. 저장소 프로필은 연결 정보만 담고 인증정보는 각 사용자의 실행 환경에서 제공합니다.
 
 공유 범위는 해당 저장소의 실제 계정·권한이 결정합니다. 참조 목록을 공유한다고 대상 문서의 권한까지 공유되는 것은 아니며, 이 플러그인이 서비스 권한을 자동으로 변경하지 않습니다. 동시 수정은 저장소의 리비전·ETag·SHA 조건으로 충돌을 확인합니다.
 
-[개인·팀 저장소 설정과 실제 명령](docs/reference-storage.md)에서 SQLite 시작 예제, 서비스별 프로필, Supabase 개인용 테이블 예제와 검증 범위를 확인할 수 있습니다. 조회 영수증은 현재 별도의 로컬 실행 기록으로 유지합니다.
+[개인·팀 저장소 설정과 실제 명령](docs/reference-storage.md)에서 SQLite 시작 예제, 서비스별 프로필, Supabase 개인용 테이블 예제와 검증 범위를 확인할 수 있습니다.
+
+조회 영수증도 같은 저장소 프로필을 사용합니다. `--trace`에 저장 주소를, `--scope`에 해당 사용자의 조회 맥락을 명시합니다. 아래 예제의 `team`, `alice-work`, 기록 키는 실제 선택한 프로필과 맥락으로 바꿉니다.
+
+```sh
+python3 <plugin>/scripts/references.py read --index <plugin>/references/governance/index.json --id routing-policy --trace store://team/receipts/alice/run-001 --scope alice-work --store-config stores.json
+python3 <plugin>/scripts/references.py audit --trace store://team/receipts/alice/run-001 --scope alice-work --store-config stores.json
+```
+
+개인용은 본인만 접근하는 저장소에, 팀 공유용은 구성원이 읽을 수 있는 저장소에 기록합니다. 조회 맥락이 다른 사용자는 별도 기록 키를 사용하며 다른 사람의 영수증을 자신의 조회로 간주하지 않습니다. `trace-show`로 상세 기록을 보고, 필요한 경우에만 `trace-export`로 JSONL 스냅샷을 내보낼 수 있습니다. 영수증에는 원천 주소·발견 메타데이터가 포함되며 실제 원천 본문과 인증정보는 복제하지 않습니다.
 
 ## 별도로 관리되는 기본 원천
 

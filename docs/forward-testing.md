@@ -26,6 +26,8 @@ Execution success, a contract-verified review, and product acceptance are differ
 
 Review sources declare their owner: `input` for preserved user requirements, `package` for the frozen reference client contract, and `reference` for an independently owned source read through a review-local trace and receipt. A reference observation retains its read-time digest; it is not a claim that the remote source stayed unchanged. Keep a procedural finding distinct from a product defect; do not cite a convenient user sentence as if it defined the harness's rules. External-reference applicability still needs human/agent review and cannot be established by file-path validation.
 
+The runtime trace may itself be in a selected document store. If the review contract needs a fixed local artifact, use `references.py trace-export` to create a new JSONL file under the review's evidence directory, and retain the returned trace address, observed revision and snapshot hash with the evidence. This explicit snapshot does not require moving the authoritative receipts out of the selected store. The review checks the supplied frozen records, not the remote store's current state or the caller's service identity.
+
 After the run, compare the reference/source trace with observed tool use. Trace validity proves only that recorded transitions follow the protocol. Inspect the actual action region and feedback lifetime in addition to geometry, focus, and data preservation. Domain guidance belongs in its selected source; project-specific expected values and tests stay with the project.
 
 ## Captured execution

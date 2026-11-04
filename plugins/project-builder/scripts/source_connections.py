@@ -130,7 +130,7 @@ class Connections:
         root = {"index":binding["index"],"access":binding["access"]}
         return self.stores.catalog([root],connector_reader=self.connector_reader).discover([root],query)
 
-    def access(self, intent, trace, *, identifier=None, reference_index=None, reference_access=None, prepare_only=False, scope="local", source_roots=()):
+    def access(self, intent, trace, *, identifier=None, reference_index=None, reference_access=None, prepare_only=False, scope=None, source_roots=()):
         selection = self.selected(intent)
         if selection["mode"] == "general":
             raise ValueError("General mode has no authored source to read")
@@ -174,6 +174,6 @@ class Connections:
                     return {"document":document,"digest":hashlib.sha256(encode(document)).hexdigest(),"address":index}
                 catalog = Catalog(read_connection,connector_reader=read_connection)
                 identifier, method = intent, "connector"
-        workflow = Workflow(trace,scope=scope,catalog=catalog,source_roots=source_roots)
+        workflow = Workflow(trace,scope=scope,catalog=catalog,source_roots=source_roots,stores=self.stores)
         operation = workflow.prepare if prepare_only else workflow.read
         return operation(index,identifier,access=method)

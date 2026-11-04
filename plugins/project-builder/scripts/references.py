@@ -13,7 +13,7 @@ if SCRIPT_DIRECTORY not in sys.path:
 
 from reference_registry import change, initialize
 from document_stores import Stores, load_config
-from reference_session import Session
+from reference_trace import export_snapshot
 from reference_workflow import Workflow
 
 
@@ -39,8 +39,8 @@ def main(argv=None):
         item.add_argument("--id", required=True)
         item.add_argument("--index-access", choices=("file", "web", "connector"))
         if name != "resolve":
-            item.add_argument("--trace", type=Path, required=True)
-            item.add_argument("--scope", default="local")
+            item.add_argument("--trace", required=True)
+            item.add_argument("--scope")
             item.add_argument("--source-root", type=Path, action="append", default=[])
         if name == "metadata-review":
             item.add_argument("--receipt", required=True)
@@ -49,20 +49,23 @@ def main(argv=None):
     batch = commands.add_parser("read-many")
     batch.add_argument("--requests", type=Path, required=True)
     batch.add_argument("--workers", type=int, default=4)
-    batch.add_argument("--trace", type=Path, required=True)
-    batch.add_argument("--scope", default="local")
+    batch.add_argument("--trace", required=True)
+    batch.add_argument("--scope")
     batch.add_argument("--source-root", type=Path, action="append", default=[])
     record = commands.add_parser("record")
-    record.add_argument("--trace", type=Path, required=True)
-    record.add_argument("--scope", default="local")
+    record.add_argument("--trace", required=True)
+    record.add_argument("--scope")
     record.add_argument("--receipt", required=True)
     record.add_argument("--status", choices=("read", "unavailable", "reused-from-current-context"), default="read")
     record.add_argument("--sha256")
     record.add_argument("--based-on")
     record.add_argument("--error")
-    audit = commands.add_parser("audit")
-    audit.add_argument("--trace", type=Path, required=True)
-    audit.add_argument("--scope", default="local")
+    for name in ("audit", "trace-show", "trace-export"):
+        item = commands.add_parser(name)
+        item.add_argument("--trace", required=True)
+        item.add_argument("--scope")
+        if name == "trace-export":
+            item.add_argument("--output", type=Path, required=True)
     for name in ("add", "update", "remove"):
         item = commands.add_parser(name)
         item.add_argument("--index", required=True)
@@ -111,7 +114,7 @@ def main(argv=None):
                         patch=json.loads(args.patch.read_text()) if args.command == "update" else None,
                         expected_digest=args.expected_digest,stores=stores)
     else:
-        workflow = Workflow(args.trace, scope=args.scope, catalog=catalog, source_roots=getattr(args,"source_root",[]))
+        workflow = Workflow(args.trace, scope=args.scope, catalog=catalog, source_roots=getattr(args,"source_root",[]), stores=stores)
         if args.command == "read":
             result = workflow.read(args.index, args.id, access=method)
         elif args.command == "prepare-read":
@@ -123,6 +126,13 @@ def main(argv=None):
                                              error=args.error, based_on=args.based_on)
         elif args.command == "audit":
             result = workflow.audit()
+        elif args.command == "trace-show":
+            result = workflow.session.snapshot()
+        elif args.command == "trace-export":
+            snapshot = workflow.session.snapshot()
+            if not snapshot["records"]:
+                raise ValueError("Cannot export a missing or empty session trace")
+            result = export_snapshot(snapshot,args.output)
         elif args.command == "metadata-review":
             result = workflow.session.review_metadata(args.receipt, catalog.resolve(args.index, args.id, access=method))
         else:

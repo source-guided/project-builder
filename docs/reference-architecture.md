@@ -13,6 +13,7 @@
 | `document_store.py`, `document_stores.py` | 저장 위치와 독립적인 문서 계약, 프로필과 어댑터 조합 |
 | `document_local.py`, `document_http.py`, 서비스별 `document_*.py` | 파일·DB·원격 서비스 읽기와 조건부 변경 |
 | `reference_session.py` | 조회 영수증·관측·메타데이터 캐시와 검토 기록 |
+| `reference_trace.py` | 영수증의 로컬 JSONL·문서 저장, 조건부 추가와 명시적 스냅샷 내보내기 |
 | `reference_workflow.py` | 공통 규약 초기화와 조회 조합 |
 | `source_connections.py` | 소비 프로젝트의 원천 선택과 연결 상태 |
 | `references.py`, `sources.py` | CLI 입력·출력 연결 |
@@ -30,7 +31,7 @@ python3 <plugin>/scripts/sources.py discover --state .local/project-builder/conn
 
 사용자 색인은 `--mode custom --index <관측한 색인> --access file|web|connector`로 연결합니다. 색인이 없는 단일 문서·페이지는 `--kind source`를 지정합니다. 기본 원천 대신 일반 방식을 선택하면 `--mode general`로 기록하며, 이 상태에 숨은 기본 원천을 넣거나 다시 선택을 요구하지 않습니다. 스킬 제작 기준도 같은 선택 계약을 사용합니다.
 
-위 `.local` 경로는 예시입니다. 참조 목록과 `--state` 모두 사용자가 선택한 파일 또는 `store://profile/key`에 둘 수 있습니다. `--store-config`로 SQLite·HTTP·GitHub·Supabase·S3·Confluence 프로필을 지정하며, 새 저장소 문서는 `init`으로 명시적으로 만듭니다. 상세 계약과 명령은 [참조 저장소](reference-storage.md)에 있습니다. 공유 참조의 권한, 실제 원천의 권한, 개인별 인증정보는 분리합니다.
+위 `.local` 경로는 예시입니다. 참조 목록과 `--state` 모두 사용자가 선택한 파일 또는 `store://profile/key`에 둘 수 있습니다. `--store-config`로 SQLite·HTTP·GitHub·Supabase·S3·Confluence 프로필을 지정하며, 새 참조/선택 문서는 `init`으로 명시적으로 만듭니다. 영수증의 `--trace`도 파일 또는 저장소 주소를 받으며 첫 기록에서 생성됩니다. 상세 계약과 명령은 [참조 저장소](reference-storage.md)에 있습니다. 공유 참조의 권한, 실제 원천의 권한, 개인별 인증정보는 분리합니다.
 
 일반 커넥터 색인에는 호스트가 `Connections(state, connector_reader=authorized_reader)`로 인증된 색인 어댑터를 주입합니다. 어댑터는 `{document, digest, address}` 관측값을 반환하고 자체 서비스 권한을 유지합니다. 설정된 `store://` 색인은 CLI에서도 내장 저장소 어댑터로 조회·변경합니다. 다른 불투명한 커넥터 식별자에는 여전히 호스트 어댑터가 필요하며, 없으면 탐색 미완료로 보고합니다. 단일 커넥터 원천 본문은 `prepare-read` 후 허가된 호스트 도구가 읽습니다. 저장소 어댑터가 지원하는 JSON 참조 문서와 임의의 DB·Confluence 업무 본문 조회를 혼동하지 않습니다.
 
@@ -50,6 +51,8 @@ python3 <plugin>/scripts/sources.py prepare-read --state .local/project-builder/
 ## 상태와 관리
 
 기존 참조 CLI의 독립 영수증, 병렬 완료, 부분 실패, 탐색 한도와 변경 충돌 검사를 유지합니다. 발견 결과가 없다는 사실과 탐색하지 못한 분기는 구분합니다. 원천 의미와 주소가 달라졌다면 관리자가 발견 메타데이터를 점검하고 관측한 리비전에 대한 검토 기록을 남깁니다.
+
+영수증 저장은 이벤트 검증과 분리합니다. 로컬 JSONL은 잠금 안에서 추가하고, 문서 저장소는 관측 리비전 조건으로 추가합니다. 충돌 시 최신 이벤트를 다시 검증한 뒤 독립 기록만 병합하므로 중복 완료나 맥락 변경은 통과하지 않습니다. 원격 trace에는 명시적 `--scope`가 필요하며 서로 다른 조회 맥락은 다른 기록 키를 사용합니다. 같은 팀 저장소를 사용한다고 하나의 인증 맥락이 되는 것은 아닙니다.
 
 캐시는 원래 발견 메타데이터를 보존하고 현재 원천 연결을 다시 해석합니다. 색인이 그대로여도 심볼릭 링크 변경·단절은 반영됩니다. HTTP 또는 커넥터 색인이 로컬 파일을 가리킨다는 사실만으로 읽기 범위를 얻지 않습니다. 필요한 로컬 범위는 호출자가 `--source-root`로 지정합니다.
 

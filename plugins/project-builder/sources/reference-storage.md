@@ -1,6 +1,6 @@
 # Choose and use a reference store
 
-Keep the registry and project choices where the consumer wants them. Existing local paths remain valid; `.local` is optional. For a team database or cloud location, use `store://<profile>/<document-key>`. Registry metadata and connection state are separate JSON documents and may use different profiles. Real source bodies remain at their own sources.
+Keep registries, project choices and receipt traces where the consumer wants them. Existing local paths remain valid; `.local` is optional. For a team database or cloud location, use `store://<profile>/<document-key>`. Registry metadata, connection state and receipts are separate documents and may use different profiles. Real source bodies remain at their own sources.
 
 Inspect existing connection settings first. If a material storage choice is missing, ask which local/remote destination and account to use, and whether the intended audience is personal or a team. Record the chosen location; do not repeatedly ask for the same choice. Do not create cloud resources or change service ACLs merely because a profile is configured. Reuse authorized host accounts or environment credentials. A profile name such as `personal` is not proof that the service is private.
 
@@ -38,4 +38,24 @@ python3 <plugin>/scripts/sources.py discover --state store://team/project-choice
 
 A store registry is an opaque connector location. Its entries use explicit file/web/connector addresses, not implicit relative filesystem paths. Each user supplies their own profile-to-account mapping. References to another profile require an explicit selected root; a shared connection to a local file requires the caller's `--source-root`. Do not transfer another user's credentials with shared choices.
 
-Run source reads through the existing reference workflow. Use a separate trace/access context per caller. Registry and connection persistence may be remote, while current receipt traces remain local execution records. Transport tests and mocked provider contracts do not establish a real account's availability, RLS, IAM, page restrictions or branch permissions; report live verification separately.
+## Receipt storage and team review
+
+`--trace` accepts a local JSONL path or a `store://` location using the same profiles. For stored traces, always supply an explicit `--scope`. Choose a distinct trace key and context label for each user/account/session. These labels organize records; service credentials and ACLs remain the actual authorization. Reuse the selected destination from the first governance read, and never create a local staging log just to enter a remote trace.
+
+```sh
+python3 <plugin>/scripts/references.py read --index <plugin>/references/governance/index.json --id routing-policy --trace store://team/receipts/alice/run-001 --scope alice-work --store-config <profiles.json>
+python3 <plugin>/scripts/references.py audit --trace store://team/receipts/alice/run-001 --scope alice-work --store-config <profiles.json>
+python3 <plugin>/scripts/references.py trace-show --trace store://team/receipts/alice/run-001 --scope alice-work --store-config <profiles.json>
+```
+
+All later `read`, `prepare-read`, `record`, `read-many` and metadata review commands use that same trace, scope and profile configuration. `sources.py read/prepare-read` accepts those flags too. The first valid receipt operation creates a new trace document conditionally; do not initialize it as a registry with `references.py init`. An existing document with another format or scope is rejected rather than converted or reset.
+
+Independent records are appended using conditional revisions; a confirmed concurrent version change is re-read and merged with event validation. One receipt can finish only once. Permission denial, a rejection without a changed revision or an uncertain network outcome is surfaced. Inspect `trace-show`/`audit` before deciding whether another recording attempt is needed. Do not repeat source access as part of append retries.
+
+For private use, choose storage readable only by the user. For team review, allow the intended team to read the relevant trace keys through the service, while keeping each caller's context separate. A teammate's receipt does not count as the current user's actual read or current-context reuse. Receipts contain source addresses and discovery metadata, so their visibility is also governed by the chosen store. No source bodies or credentials are copied by the receipt writer.
+
+Stored traces use a format-1 JSON envelope with `records` containing the existing v2 session events. Each append updates that document conditionally. Service document-size limits still apply; choose new trace keys for new sessions rather than truncating old receipts. Local traces keep their v2 JSONL representation. Neither format is a cryptographic attestation of unrecorded actions or a substitute for source permissions.
+
+When an evaluation tool needs a frozen local artifact, export it explicitly with `trace-export --trace ... --scope ... --store-config ... --output <new-file.jsonl>`. The command reports the source trace revision and snapshot hash and refuses to overwrite an existing file. This creates evidence at an observed point in time, not a replacement for the selected store.
+
+Transport tests and mocked provider contracts do not establish a real account's availability, RLS, IAM, page restrictions or branch permissions; report live verification separately.

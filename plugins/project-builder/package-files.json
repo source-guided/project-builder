@@ -25,6 +25,7 @@
   "scripts/reference_io.py",
   "scripts/reference_registry.py",
   "scripts/reference_session.py",
+  "scripts/reference_trace.py",
   "scripts/reference_workflow.py",
   "scripts/references.py",
   "scripts/source_connections.py",

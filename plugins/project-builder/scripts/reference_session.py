@@ -1,22 +1,18 @@
 """세션별 참조 영수증, 발견 메타데이터 캐시와 관리 확인 기록."""
 
 import copy
-import hashlib
-import json
-import os
-from pathlib import Path
 import time
 import uuid
 
 from reference_catalog import binding_digest
-from reference_io import locked
+from reference_trace import TraceStorage
 
 
 SOURCE_STATUSES = {"read", "unavailable", "reused-from-current-context"}
 
 
 def audit_records(records):
-    if not records or records[0].get("event") != "session" or records[0].get("format") != 2:
+    if not isinstance(records, list) or not records or not all(isinstance(e, dict) for e in records) or records[0].get("event") != "session" or records[0].get("format") != 2:
         raise ValueError("Expected a v2 session; use the originating package to inspect historical traces")
     if not isinstance(records[0].get("scope"), str) or not records[0]["scope"]:
         raise ValueError("Session needs an explicit scope")
@@ -62,47 +58,44 @@ def audit_records(records):
 
 
 class Session:
-    def __init__(self, trace, *, scope="local"):
+    def __init__(self, trace, *, scope=None, stores=None, max_attempts=8):
+        self.storage = TraceStorage(trace, stores=stores, max_attempts=max_attempts)
+        self.path = self.storage.path
+        if scope is None and self.path is None:
+            raise ValueError("Stored traces need an explicit scope; use a separate trace key for each access context")
+        scope = "local" if scope is None else scope
         if not isinstance(scope, str) or not scope.strip():
             raise ValueError("Session scope must be nonempty")
-        self.path = Path(trace).absolute()
         self.scope = scope
 
-    def _load(self):
-        if self.path.is_symlink():
-            raise ValueError("Session trace must not be a symlink")
-        if not self.path.exists():
-            return []
-        records = [json.loads(line) for line in self.path.read_text().splitlines() if line.strip()]
-        audit_records(records)
-        if records[0]["scope"] != self.scope:
-            raise ValueError("Session scope changed; use a separate session for this access context")
+    def _checked(self, records):
+        if records:
+            audit_records(records)
+            if records[0]["scope"] != self.scope:
+                raise ValueError("Session scope changed; use a separate session for this access context")
         return records
 
-    def _append(self, event):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
-        with os.fdopen(os.open(self.path, flags, 0o600), "a", encoding="utf-8") as stream:
-            stream.write(json.dumps(event, ensure_ascii=False) + "\n")
-            stream.flush(); os.fsync(stream.fileno())
-
     def _transaction(self, create_event):
-        with locked(self.path):
-            records = self._load()
+        def additions(records):
+            self._checked(records)
+            header = []
             if not records:
-                records = [{"event": "session", "format": 2, "scope": self.scope, "created_at": time.time()}]
-                self._append(records[0])
-            event = create_event(records)
-            audit_records([*records, event])
-            self._append(event)
-            return event
+                header = [{"event": "session", "format": 2, "scope": self.scope, "created_at": time.time()}]
+            event = create_event([*records, *header])
+            audit_records([*records, *header, event])
+            return [*header, event]
+        return self.storage.append(additions)[-1]
+
+    def snapshot(self):
+        observed = self.storage.snapshot()
+        self._checked(observed["records"])
+        return {**observed, "scope": self.scope}
 
     def events(self):
-        with locked(self.path):
-            return self._load()
+        return self.snapshot()["records"]
 
     def cached_metadata(self, index, identifier, signature, *, access="file"):
-        if signature is None:
+        if signature is None or self.path is None:
             return None
         for event in reversed(self.events()):
             if event.get("event") == "reference" and event["resolved"]["reference"] == {"index": index, "id": identifier, "access": access}:
@@ -113,12 +106,16 @@ class Session:
                 return None
         return None
 
-    def prepare(self, resolved, *, index_signature=None, cache_hit=False, purpose=None):
+    def prepare(self, resolved, *, index_signature=None, cache_hit=False, purpose=None, validate_context=None):
         event = {"event": "reference", "receipt": str(uuid.uuid4()), "resolved": copy.deepcopy(resolved),
                  "created_at": time.time(), "index_signature": index_signature, "cache_hit": cache_hit}
         if purpose:
             event["purpose"] = purpose
-        return self._transaction(lambda records: event)
+        def create(records):
+            if validate_context is not None:
+                validate_context(records)
+            return event
+        return self._transaction(create)
 
     def record(self, receipt, *, status="read", digest=None, error=None, based_on=None):
         event = {"event": "source", "receipt": receipt, "status": status, "observed_at": time.time()}

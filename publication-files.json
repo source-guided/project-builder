@@ -35,6 +35,7 @@
   "plugins/project-builder/scripts/reference_io.py",
   "plugins/project-builder/scripts/reference_registry.py",
   "plugins/project-builder/scripts/reference_session.py",
+  "plugins/project-builder/scripts/reference_trace.py",
   "plugins/project-builder/scripts/reference_workflow.py",
   "plugins/project-builder/scripts/references.py",
   "plugins/project-builder/scripts/source_connections.py",
@@ -70,6 +71,7 @@
   "tests/test_process_lifecycle.py",
   "tests/test_reference_runtime.py",
   "tests/test_references.py",
+  "tests/test_shared_receipts.py",
   "tests/test_source_connections.py",
   "tests/test_source_contract.py"
 ]
