@@ -148,6 +148,8 @@ python3 <plugin>/scripts/references.py audit --trace store://team/receipts/alice
 
 원천 스킬은 `capabilities/`에 두고 원천의 참조를 거쳐 문맥에 맞게 읽습니다. 이 플러그인에 전문 스킬을 합치거나 사용자의 전역 스킬 목록에 자동 등록하지 않습니다. 각 원천은 자기 `source.json`과 참조 색인, 공개 파일 목록을 관리합니다.
 
+새 원천과 프로젝트 자료는 본문과 참조를 함께 분야·책임별로 구조화합니다. 담당자 질문·답변과 스펙을 루트에 계속 쌓는 대신 소유 영역 아래에 두고, 각 영역의 색인으로 탐색합니다. 각 영역 안에서도 같은 판단을 반복해 하나의 책임은 함께 두고 독립적으로 바뀌는 하위 책임은 더 나눕니다. 다른 원천을 받지 않는 일반 방식에도 적용되며, 특정 폴더 이름이나 불필요한 깊이는 강제하지 않습니다. 자세한 기준은 [공통 참여 계약](plugins/project-builder/sources/source-contract.md)의 자료 구성 절에서 확인합니다.
+
 로컬 파일과 HTTP 색인은 기본 도구로 탐색합니다. Confluence·DB 등은 관측한 주소와 접근 방식을 연결하고 사용 중인 호스트의 허가된 도구로 읽습니다. 이 플러그인이 별도 계정이나 모든 서비스의 인증·조회 기능을 제공하는 것은 아닙니다.
 
 [참조와 연결 사용법](docs/reference-architecture.md) · [공통 참여 계약](plugins/project-builder/sources/source-contract.md)

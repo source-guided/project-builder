@@ -13,4 +13,6 @@ python3 <plugin-root>/scripts/references.py read --index <plugin-root>/reference
 
 Start from the user's task and existing project connections. Default sources are suggestions, not dependencies. Do not fetch their bodies, clone them, install their capabilities, or select them before the user chooses a relevant connection. Preserve existing choices and authorization. Source skills are read contextually through their owning references; they are never added to the global skill list by this client.
 
+For source or project-record creation, apply the source contract's content-organization requirements even when the caller chooses general mode. Methodology selection does not remove the common participation contract.
+
 Reference registries, connection choices and receipts may each live in the user's local or remote store. A local trace path is a default only when no receipt destination was selected; report that location. Never fall back to a local receipt file when the selected remote store fails. For storage, sharing, or database setup, resolve `storage` / `guide` from the package reference index. Reuse the selected store and access context; do not silently copy shared records into a new local authority or change permissions. Team members may review shared receipts, while each caller records their own source access in a separate context/trace key.

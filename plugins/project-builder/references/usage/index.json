@@ -4,12 +4,17 @@
     {
       "id": "source-contract",
       "label": "원천 참여 계약",
-      "description": "원천 참여 계약",
+      "description": "원천 소유권·자료 구성·참조 계층과 내부 스킬 노출의 공통 계약",
       "kind": "source",
       "access": "file",
       "locator": "../../sources/source-contract.md",
       "topics": [
-        "source-contract"
+        "source-contract",
+        "organization",
+        "structure",
+        "authoring",
+        "원천",
+        "구조"
       ]
     },
     {

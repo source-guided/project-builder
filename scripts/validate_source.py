@@ -43,9 +43,13 @@ def validate_source(root):
     graph=Catalog(load_index).walk([entry])
     if not graph["complete"]:raise ValueError(f"Incomplete source reference graph: {graph['errors']}")
     reached=set()
+    index_directories=set()
     for index in graph["indexes"]:
         current=Path(index["index"])
         if not current.is_relative_to(root/"references"):raise ValueError("Source indexes must stay in their owner")
+        if current.parent in index_directories:
+            raise ValueError("Reference area indexes must have separate owner directories")
+        index_directories.add(current.parent)
         for item in index["entries"]:
             if item["access"] in {"file","relative"}:
                 target=local_path(source_address(current,item["locator"],item["access"]))

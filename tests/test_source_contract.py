@@ -38,6 +38,25 @@ class SourceContractTest(unittest.TestCase):
                 else:path.mkdir(parents=True)
                 with self.assertRaisesRegex(ValueError,'global skills'):validate_source(root)
 
+    def test_reference_areas_use_directories_without_requiring_depth_for_a_single_area(self):
+        for child_name in ('example/index.json','example.json'):
+            with self.subTest(child_name=child_name),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);fixture(root)
+                entry=root/'references/index.json'
+                area=json.loads(entry.read_text())
+                child=root/'references'/child_name
+                child.parent.mkdir(parents=True,exist_ok=True)
+                if child.parent!=entry.parent:
+                    area['entries'][0]['locator']='../../capabilities/example/SKILL.md'
+                child.write_text(json.dumps(area))
+                entry.write_text(json.dumps({'format':1,'entries':[{'id':'area','label':'Example area','kind':'reference','access':'relative','locator':child_name,'topics':[]}]}))
+                inventory=root/'source-files.json'
+                inventory.write_text(json.dumps([*json.loads(inventory.read_text()),child.relative_to(root).as_posix()]))
+                if child.parent==entry.parent:
+                    with self.assertRaisesRegex(ValueError,'separate owner directories'):validate_source(root)
+                else:
+                    self.assertEqual(validate_source(root)['capabilities'],1)
+
     def test_source_capability_cannot_hide_host_registration_or_escape_its_owner(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)/'source';fixture(root)
