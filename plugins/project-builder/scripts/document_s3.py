@@ -2,7 +2,7 @@
 
 import json
 
-from document_store import ConflictError, MissingDocument, StoreError, encode, observation
+from document_store import ConflictError, MissingDocument, StoreError, encode, observation, validate_write_size
 
 
 class S3Store:
@@ -40,7 +40,9 @@ class S3Store:
         return observation(json.loads(raw), result["ETag"], raw=raw)
 
     def write(self, key, document, *, expected_revision):
+        data = encode(document)
+        validate_write_size(data, self.max_bytes)
         condition = {"IfNoneMatch": "*"} if expected_revision is None else {"IfMatch": expected_revision}
-        result = self._call("put_object", Bucket=self.bucket, Key=self._key(key), Body=encode(document),
+        result = self._call("put_object", Bucket=self.bucket, Key=self._key(key), Body=data,
                             ContentType="application/json", **condition)
         return observation(document, result["ETag"])

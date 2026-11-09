@@ -174,6 +174,7 @@ class Connections:
                     return {"document":document,"digest":hashlib.sha256(encode(document)).hexdigest(),"address":index}
                 catalog = Catalog(read_connection,connector_reader=read_connection)
                 identifier, method = intent, "connector"
-        workflow = Workflow(trace,scope=scope,catalog=catalog,source_roots=source_roots,stores=self.stores)
+        workflow = Workflow(trace,scope=scope,catalog=catalog,source_roots=source_roots,stores=self.stores,
+                            restrict_local_sources=self.path is None)
         operation = workflow.prepare if prepare_only else workflow.read
         return operation(index,identifier,access=method)

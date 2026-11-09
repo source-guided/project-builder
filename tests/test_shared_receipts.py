@@ -106,6 +106,70 @@ def permission_server():
 
 
 class SharedReceiptsTest(unittest.TestCase):
+    def test_completion_capacity_failure_keeps_receipt_pending_until_record_recovery(self):
+        from test_document_services import service
+        with service() as (config, documents, requests, _):
+            trace = "store://http/receipts/completion"
+            stores = Stores(config); flow = self.bootstrap(trace, stores)
+            request = flow.prepare(PLUGIN / "references/governance/index.json", "routing-policy")
+            before = flow.session.snapshot()
+            current_bytes = len(encode(documents[("http", "receipts/completion")]["document"]))
+            limited_config = copy.deepcopy(config)
+            limited_config["profiles"]["http"]["max_bytes"] = current_bytes
+            limited = Workflow(trace, scope="alice-work", stores=Stores(limited_config))
+            count = len(requests)
+            with self.assertRaisesRegex(StoreError, "before sending"):
+                limited.session.record(request["receipt"], digest="a" * 64)
+            self.assertTrue(all(item["method"] == "GET" for item in requests[count:]))
+            self.assertEqual(limited.session.snapshot(), before)
+            self.assertIn(request["receipt"], limited.audit()["pending"])
+            # 용량을 조정한 뒤 실제 원천 읽기를 반복하지 않고 같은 완료 기록만 재시도한다.
+            flow.session.record(request["receipt"], digest="a" * 64)
+            self.assertEqual(flow.audit()["pending"], [])
+            with self.assertRaises(ValueError): flow.session.record(request["receipt"], digest="a" * 64)
+
+    def test_trace_capacity_rejection_preserves_history_and_allows_new_session_key(self):
+        from test_document_services import service
+        with service() as (config, documents, requests, _), tempfile.TemporaryDirectory() as tmp:
+            config["profiles"]["http"]["max_bytes"] = 4096
+            stores = Stores(config); trace = "store://http/receipts/run-001"
+            flow = self.bootstrap(trace, stores)
+            index = fixture(Path(tmp))
+            for _ in range(20):
+                before = flow.session.snapshot()
+                saved = copy.deepcopy(documents[("http", "receipts/run-001")])
+                count = len(requests)
+                try:
+                    request = flow.prepare(index, "one")
+                except StoreError as error:
+                    self.assertIn("before sending", str(error))
+                    self.assertTrue(all(item["method"] == "GET" for item in requests[count:]))
+                    self.assertEqual(documents[("http", "receipts/run-001")], saved)
+                    self.assertEqual(flow.session.snapshot(), before)
+                    self.assertTrue(flow.audit()["valid"])
+                    break
+                # 완료 기록이 경계를 넘는 경우도 기존 영수증을 보존해야 한다.
+                before = flow.session.snapshot()
+                saved = copy.deepcopy(documents[("http", "receipts/run-001")])
+                try:
+                    flow.session.record(request["receipt"], digest="a" * 64)
+                except StoreError as error:
+                    self.assertIn("before sending", str(error))
+                    self.assertEqual(documents[("http", "receipts/run-001")], saved)
+                    self.assertEqual(flow.session.snapshot(), before)
+                    self.assertIn(request["receipt"], flow.audit()["pending"])
+                    break
+            else:
+                self.fail("Trace did not reach the configured capacity")
+            snapshot = flow.session.snapshot()
+            exported = export_snapshot(snapshot, Path(tmp) / "snapshot.jsonl")
+            self.assertEqual(exported["revision"], snapshot["revision"])
+            # 기존 기록을 자르거나 복사하지 않고 같은 저장소에 새 세션을 시작한다.
+            next_flow = self.bootstrap("store://http/receipts/run-002", stores)
+            self.assertEqual(next_flow.read(index, "two")["content"], "private body two")
+            self.assertEqual(next_flow.audit()["read"], 2)
+            self.assertEqual(flow.session.snapshot(), snapshot)
+
     def bootstrap(self, trace, stores, *, scope="alice-work"):
         flow = Workflow(trace, stores=stores, scope=scope)
         flow.read(PLUGIN / "references/governance/index.json", "routing-policy")

@@ -6,6 +6,7 @@ import io
 import json
 from pathlib import Path
 import sys
+import tempfile
 import threading
 import unittest
 from unittest.mock import patch
@@ -44,6 +45,9 @@ def service():
                 parsed = urlparse(self.path); query = parse_qs(parsed.query)
                 data = json.loads(self.rfile.read(int(self.headers["Content-Length"]))) if self.headers.get("Content-Length") else None
                 requests.append({"method": self.command, "path": self.path, "body": data, "headers": dict(self.headers)})
+                if parsed.path == "/http/truncated":
+                    self.send_response(200); self.send_header("Transfer-Encoding", "chunked"); self.end_headers()
+                    self.wfile.write(b"10\r\nabc"); self.close_connection = True; return
                 if "denied" in parsed.path:
                     self.respond(403, {"error": secret}); return
                 if parsed.path == "/http/redirect":
@@ -113,6 +117,33 @@ def service():
 
 
 class DocumentServicesTest(unittest.TestCase):
+    def test_truncated_store_response_preserves_healthy_discovery(self):
+        with service() as (config, _, requests, secret), tempfile.TemporaryDirectory() as tmp:
+            index = Path(tmp) / "index.json"
+            index.write_text(json.dumps({"format": 1, "entries": [{"id": "healthy", "label": "Healthy", "kind": "source", "access": "web", "locator": "https://example.com/source", "topics": []}]}))
+            roots = ["store://http/truncated", str(index)]
+            result = Stores(config).catalog(roots).discover(roots)
+            self.assertFalse(result["complete"])
+            self.assertEqual([item["reference"]["id"] for item in result["references"]], ["healthy"])
+            self.assertEqual(len(result["errors"]), 1)
+            self.assertEqual(result["errors"][0]["type"], "StoreError")
+            self.assertNotIn(secret, json.dumps(result))
+            self.assertEqual(len(requests), 1)
+
+    def test_oversized_http_writes_fail_before_request_and_preserve_document(self):
+        with service() as (config, _, requests, __):
+            for profile in config["profiles"].values(): profile["max_bytes"] = 1024
+            stores = Stores(config)
+            for name in config["profiles"]:
+                with self.subTest(driver=name):
+                    address = "store://" + name + "/limited"
+                    saved = stores.write(address, {"value": "readable"}, expected_revision=None)
+                    count = len(requests)
+                    with self.assertRaisesRegex(StoreError, "before sending"):
+                        stores.write(address, {"value": "한" * 1024}, expected_revision=saved["revision"])
+                    self.assertFalse(any(item["method"] != "GET" for item in requests[count:]))
+                    self.assertEqual(stores.read(address)["document"], {"value": "readable"})
+
     def test_service_adapters_round_trip_and_reject_stale_changes(self):
         with service() as (config, documents, requests, secret):
             stores = Stores(config)
@@ -193,6 +224,12 @@ class DocumentServicesTest(unittest.TestCase):
         self.assertEqual(client.requests[0]["IfNoneMatch"], "*")
         self.assertEqual(client.requests[1]["IfMatch"], first["revision"])
         self.assertEqual(client.requests[0]["Key"], "team/refs")
+        limited = S3Store(bucket="private-bucket", prefix="team", client=client, max_bytes=64)
+        count = len(client.requests)
+        with self.assertRaisesRegex(StoreError, "before sending"):
+            limited.write("refs", {"value": "한" * 64}, expected_revision=client.etag)
+        self.assertEqual(len(client.requests), count)
+        self.assertEqual(limited.read("refs")["document"], {"version": 2})
 
 
 if __name__ == "__main__":

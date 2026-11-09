@@ -2,11 +2,12 @@
 
 import json
 import os
+from http.client import HTTPException
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from document_store import ConflictError, MissingDocument, StoreError, encode, observation
+from document_store import ConflictError, MissingDocument, StoreError, encode, observation, validate_write_size
 
 
 class HTTPFailure(StoreError):
@@ -47,6 +48,7 @@ class Transport:
     def request(self, method, suffix="", *, body=None, headers=None):
         request_headers = {"Accept": "application/json", **self.headers, **(headers or {})}
         if body is not None:
+            validate_write_size(body, self.max_bytes)
             request_headers["Content-Type"] = "application/json"
         request = Request(self.endpoint + suffix, data=body, method=method, headers=request_headers)
         try:
@@ -59,7 +61,7 @@ class Transport:
             # 응답 본문·URL에는 비밀값이 있을 수 있으므로 오류에 복제하지 않는다.
             error.close()
             raise HTTPFailure(error.code) from None
-        except (URLError, TimeoutError):
+        except (URLError, TimeoutError, HTTPException):
             raise StoreError("Store transport failed; check endpoint availability") from None
 
     def json(self, method, suffix="", *, document=None, headers=None):

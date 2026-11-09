@@ -106,6 +106,37 @@ class DocumentStoreTest(unittest.TestCase):
             self.assertEqual(request["resolved"]["reference"]["access"], "connector")
             self.assertFalse(any(root.glob("*.references")))
 
+    def test_shared_local_index_keeps_source_grant_through_nested_and_cached_reads(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); allowed = root / "allowed"; allowed.mkdir()
+            outside = root / "outside.md"; outside.write_text("outside grant")
+            inside = allowed / "inside.md"; inside.write_text("inside grant")
+            linked = allowed / "linked.md"; linked.symlink_to(inside)
+            nested = allowed / "nested"; nested.mkdir()
+            index = allowed / "index.json"; child = nested / "index.json"
+            index.write_text(json.dumps({"format": 1, "entries": [
+                {**entry("nested"), "kind": "reference", "access": "relative", "locator": "nested/index.json"}]}))
+            child.write_text(json.dumps({"format": 1, "entries": [
+                {**entry("outside"), "access": "relative", "locator": "../../outside.md"},
+                {**entry("linked"), "access": "file", "locator": str(linked)}]}))
+            stores = Stores({"format": 1, "profiles": {"team": {"driver": "sqlite", "path": str(root / "state.db"), "writable": True}}})
+            connections = Connections("store://team/project", stores=stores); connections.initialize()
+            connections.select("work", "custom", index=str(index))
+            trace = root / "trace.jsonl"; flow = Workflow(trace)
+            flow.read(PLUGIN / "references/governance/index.json", "routing-policy")
+            options = {"reference_index": str(child), "source_roots": [allowed]}
+            self.assertEqual(connections.access("work", trace, identifier="linked", **options)["content"], "inside grant")
+            before = flow.session.events()
+            for prepare_only in (False, True):
+                with self.subTest(prepare_only=prepare_only), self.assertRaises(PermissionError):
+                    connections.access("work", trace, identifier="outside", prepare_only=prepare_only, **options)
+            linked.unlink(); linked.symlink_to(outside)
+            with self.assertRaises(PermissionError):
+                connections.access("work", trace, identifier="linked", **options)
+            self.assertEqual(flow.session.events(), before)
+            # 명시적으로 넓힌 범위만 허용하며 공유 상태 자체는 권한을 확장하지 않는다.
+            self.assertEqual(connections.access("work", trace, identifier="outside", reference_index=str(child), source_roots=[root])["content"], "outside grant")
+
     def test_read_only_profile_and_unselected_profile_do_not_grant_access(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = str(Path(tmp) / "store.db")

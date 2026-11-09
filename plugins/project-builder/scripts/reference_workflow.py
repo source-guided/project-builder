@@ -17,11 +17,12 @@ BOOTSTRAP = "project-builder:routing-bootstrap"
 
 
 class Workflow:
-    def __init__(self, trace, *, scope=None, catalog=None, index_fingerprint=fingerprint, source_roots=(), stores=None):
+    def __init__(self, trace, *, scope=None, catalog=None, index_fingerprint=fingerprint, source_roots=(), stores=None, restrict_local_sources=False):
         self.session = Session(trace, scope=scope, stores=stores)
         self.catalog = catalog or Catalog(load_index)
         self.index_fingerprint = index_fingerprint
         self.source_roots = [Path(root).resolve() for root in source_roots]
+        self.restrict_local_sources = restrict_local_sources
         if not all(root.is_dir() for root in self.source_roots):
             raise ValueError("Explicit source roots must be existing directories")
 
@@ -41,12 +42,19 @@ class Workflow:
         def validate_context(records):
             if not is_policy and not self._policy_read(records):
                 raise ValueError("Read the current governing routing source through its reference first")
-        if resolved["access"] == "file" and resolved["reference"]["access"] != "file":
-            target=local_path(resolved["address"])
-            if not any(target.is_relative_to(root) for root in self.source_roots):
-                raise PermissionError("A remote or connector index cannot authorize a local source read; explicitly supply its source root")
+        self._source_path(resolved)
         return self.session.prepare(resolved, index_signature=signature, cache_hit=cached is not None,
                                     purpose=BOOTSTRAP if is_policy else None, validate_context=validate_context)
+
+    def _source_path(self, resolved):
+        if resolved["access"] != "file":
+            return None
+        target = local_path(resolved["address"])
+        # 공유 연결에서 부여한 범위는 중간 로컬 색인과 캐시를 거쳐도 유지한다.
+        if self.restrict_local_sources or resolved["reference"]["access"] != "file":
+            if not any(target.is_relative_to(root) for root in self.source_roots):
+                raise PermissionError("Local source is outside the explicit source roots; a reference cannot expand the access grant")
+        return target
 
     def read(self, index, identifier, *, access=None):
         request = self.prepare(index, identifier, access=access)
@@ -54,7 +62,7 @@ class Workflow:
         try:
             if resolved["access"] != "file":
                 raise ValueError("Use prepare-read and the authorized source adapter, then record the receipt")
-            data = local_path(resolved["address"]).read_bytes()
+            data = self._source_path(resolved).read_bytes()
             content = data.decode("utf-8")
         except (OSError, ValueError) as error:
             self.session.record(receipt, status="unavailable", error=error)

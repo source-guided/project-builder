@@ -16,6 +16,11 @@ class StoreError(OSError):
     """인증정보나 원격 응답 본문을 노출하지 않는 저장소 오류."""
 
 
+def validate_write_size(data, max_bytes):
+    if len(data) > max_bytes:
+        raise StoreError("Write exceeds the configured size limit; rejected before sending. Existing document is unchanged. Inspect capacity before retrying.")
+
+
 def encode(document):
     return (json.dumps(document, ensure_ascii=False, sort_keys=True, allow_nan=False,
                        separators=(",", ":")) + "\n").encode("utf-8")
