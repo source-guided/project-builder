@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "project-builder",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Find, select and connect task-relevant sources without installing their internal skills.",
   "author": {
     "name": "source-guided"
